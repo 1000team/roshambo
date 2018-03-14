@@ -104,23 +104,43 @@ export async function game(bot: SlackClient, msg: Chat.Message, opponentId: stri
     }
   } catch (ex) {
     await setInGame(msg.user, opponentId, false)
-    bot.postMessage({
+
+    if (ex instanceof TimeoutError) {
+      await bot.postMessage({
+        channel: msg.channel,
+        text: `Looks like ${challenger.real_name} and ${
+          opponent.real_name
+        } chickened out! :hatched_chick:`,
+        ...cfg.defaultParams
+      })
+    }
+
+    await bot.postMessage({
       channel: msg.channel,
-      text: `Looks like ${challenger.real_name} and ${
-        opponent.real_name
-      } chickened out! :hatched_chick:`,
-      ...cfg.defaultParams
+      text: `Failed to complete Roshambo: ${ex.message || ex}`
     })
   }
 }
 
 async function getSelection(bot: SlackClient, userId: string, preText = ''): Promise<string> {
   const cfg = getConfig()
-  await bot.directMessage(userId, {
+  const result = await bot.directMessage(userId, {
     text: preText + 'Enter your selection: rock, scissors, paper',
     ...cfg.defaultParams
   })
-  const response = await readMessage(bot, userId, { directOnly: true, timeout: 120 })
+
+  if (!result) {
+    throw new Error(`Failed to message user`)
+  }
+
+  if (!result.ok) {
+    throw new Error(`Failed to message user: ${(result as any).error}`)
+  }
+
+  const response = await readMessage(bot, userId, { directOnly: true, timeout: 120 }).catch(() => {
+    throw new TimeoutError()
+  })
+
   if (!isValid(response)) {
     return getSelection(bot, userId, 'Invalid selection. ')
   }
@@ -222,6 +242,8 @@ async function setInGame(challengerId: string, opponentId: string, inGame: boole
   await setConfig('roshambo', existing)
   return true
 }
+
+class TimeoutError extends Error {}
 
 const defaultHistory: Roshambo = {
   userId: '',
