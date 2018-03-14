@@ -5,7 +5,7 @@ import * as elo from 'ratings'
 
 register(
   'play',
-  `Highly advanced and diplomatic decision maker and arugment resolver. *Usage*: \`play @user\``,
+  `Highly advanced and diplomatic decision maker and argument resolver. *Usage*: \`play @user\``,
   async (bot, msg, cfg, args) => {
     const opponentId = (args[0] || '').slice(2, -1)
     return game(bot, msg, opponentId)
@@ -106,9 +106,9 @@ export async function game(bot: SlackClient, msg: Chat.Message, opponentId: stri
     await setInGame(msg.user, opponentId, false)
     bot.postMessage({
       channel: msg.channel,
-      text: `Roshambo between ${challenger.real_name} and ${
+      text: `Looks like ${challenger.real_name} and ${
         opponent.real_name
-      } cancelled: Timed out`,
+      } chickened out! :hatched_chick:`,
       ...cfg.defaultParams
     })
   }
