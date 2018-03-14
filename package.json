@@ -1,0 +1,35 @@
+{
+  "name": "roshambot",
+  "publishConfig": {
+    "//": "Do not publish",
+    "registry": "https://bad.registry"
+  },
+  "description": "Totally serious Roshambo for Slack",
+  "version": "1.0.0",
+  "author": "Carl Winkler",
+  "bugs": {
+    "url": "https://github.com/1000team/roshambo"
+  },
+  "dependencies": {
+    "ratings": "^0.4.2",
+    "slacklibbot": "^0.5.7"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1000team/roshambo"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node src/index.js",
+    "clean": "rimraf \"src/**/*.js\" \"src/**/*.js.map\""
+  },
+  "devDependencies": {
+    "@types/node": "^9.3.0",
+    "prettier": "^1.10.2",
+    "rimraf": "^2.6.2",
+    "typescript": "^2.6.2"
+  }
+}

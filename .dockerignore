@@ -1,0 +1,11 @@
+node_modules
+.vscode/
+.git/
+docs/
+assets/
+bin/
+config/
+
+*.js
+*.map
+config.json
