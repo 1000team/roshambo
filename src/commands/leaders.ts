@@ -3,7 +3,7 @@ import { SlackClient } from 'slacklibbot'
 import { toStats } from './stats'
 
 register('leaders', 'View the Roshambo leaderboard', (bot, msg) => {
-  return leaders(bot, msg.user, msg.channel)
+  return leaders(bot, msg.channel, msg.user)
 })
 
 export async function leaders(bot: SlackClient, channel: string, userId: string) {
