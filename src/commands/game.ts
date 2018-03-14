@@ -118,7 +118,8 @@ export async function game(bot: SlackClient, msg: Chat.Message, opponentId: stri
 
     await bot.postMessage({
       channel: msg.channel,
-      text: `Failed to complete Roshambo: ${ex.message || ex}`
+      text: `Failed to complete Roshambo: ${ex.message || ex}`,
+      ...cfg.defaultParams
     })
   }
 }
