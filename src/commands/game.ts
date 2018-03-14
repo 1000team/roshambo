@@ -113,6 +113,7 @@ export async function game(bot: SlackClient, msg: Chat.Message, opponentId: stri
         } chickened out! :hatched_chick:`,
         ...cfg.defaultParams
       })
+      return
     }
 
     await bot.postMessage({
