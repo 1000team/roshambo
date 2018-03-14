@@ -3,7 +3,7 @@ import { setup } from 'slacklibbot'
 const { setConfig, getConfig, register } = setup<Config>(
   {
     name: 'Roshambot',
-    emoji: ':derpderp:',
+    emoji: ':fist:',
     channel: 'team-1000-team',
     timezone: 8,
     roshambo: {}
@@ -12,11 +12,6 @@ const { setConfig, getConfig, register } = setup<Config>(
 )
 
 export { setConfig, getConfig, register }
-
-/**
- * The top-level configuration keys changed
- * This will backfill them if they aren't set
- */
 
 export async function backfillConfig() {
   const cfg: any = getConfig()
@@ -29,13 +24,6 @@ export async function backfillConfig() {
   }
 
   await setConfig('roshambo', roshambo)
-
-  if (cfg.name !== cfg.botName) {
-    await setConfig('name', cfg.botName)
-    await setConfig('emoji', cfg.botEmoji)
-    await setConfig('timezone', cfg.botTimezone)
-    await setConfig('channel', cfg.botChannel)
-  }
 }
 
 export interface Config {
