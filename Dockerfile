@@ -1,6 +1,6 @@
 FROM mhart/alpine-node:8
 
-LABEL description "Slack Standup Bot"
+LABEL description "Roshambot"
 
 WORKDIR /code
 
