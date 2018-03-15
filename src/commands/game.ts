@@ -1,4 +1,4 @@
-import { SlackClient, Chat, readMessage } from 'slacklibbot'
+import { SlackClient, Chat, readMessage } from 'slacklib'
 import { getConfig, setConfig, Roshambo, register } from '../config'
 import { toStats, getUserStats } from './stats'
 import * as elo from 'ratings'

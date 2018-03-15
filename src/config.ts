@@ -1,4 +1,4 @@
-import { setup } from 'slacklibbot'
+import { setup } from 'slacklib'
 
 const { setConfig, getConfig, register } = setup<Config>(
   {

@@ -1,5 +1,5 @@
 import { getConfig, register } from '../config'
-import { SlackClient } from 'slacklibbot'
+import { SlackClient } from 'slacklib'
 import { toStats } from './stats'
 
 register('leaders', 'View the Roshambo leaderboard', (bot, msg) => {

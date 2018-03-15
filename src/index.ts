@@ -1,5 +1,5 @@
 import { backfillConfig } from './config'
-import { start } from 'slacklibbot'
+import { start } from 'slacklib'
 import './commands'
 
 async function main() {
