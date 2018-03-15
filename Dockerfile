@@ -14,7 +14,6 @@ COPY tsconfig.json /code
 COPY src /code/src
 
 RUN yarn \
-  && yarn build \
-  && yarn --prod
+  && yarn build
 
 CMD node src/index.js
