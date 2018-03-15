@@ -14,3 +14,18 @@ export function getRealname(bot: SlackClient, id: string) {
 
   return
 }
+
+export type Mode = 'classic' | 'bo3'
+
+export function getModeKey(mode: Mode) {
+  switch (mode) {
+    case 'classic':
+      return 'roshambo'
+    case 'bo3':
+      return 'roshamboBo3'
+  }
+}
+
+export function sleep(time: number) {
+  return new Promise(resolve => setTimeout(() => resolve(), time))
+}

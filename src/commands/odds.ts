@@ -1,5 +1,5 @@
 import { register, getConfig } from '../config'
-import { getRealname } from './util'
+import { getRealname, Mode, getModeKey } from './util'
 import * as elo from 'ratings'
 import { SlackClient } from 'slacklib'
 
@@ -7,39 +7,55 @@ register(
   'odds',
   'View the match odds. *Usage* `odds @opponent` | `odds @challenger @opponent`',
   (bot, msg, cfg, args) => {
-    const left = (args[0] || '').slice(2, -1)
-    const right = (args[1] || '').slice(2, -1)
+    const left = args.length === 1 ? msg.user : trim(args[0])
+    const right = args.length === 1 ? trim(args[0]) : trim(args[1])
 
-    try {
-      if (left && right) {
-        const { challenger, opponent } = getOdds(bot, left, right)
-        return bot.postMessage({
-          channel: msg.channel,
-          text: `*${challenger.name}*: ${challenger.text} | *${opponent.name}*: ${opponent.text}`,
-          ...cfg.defaultParams
-        })
-      }
-
-      const odds = getOdds(bot, msg.user, left)
-      return bot.postMessage({
-        channel: msg.channel,
-        text: `${odds.challenger} | ${odds.opponent}`,
-        ...cfg.defaultParams
-      })
-    } catch (ex) {
-      return bot.postMessage({
-        channel: msg.channel,
-        text: ex.message,
-        ...cfg.defaultParams
-      })
-    }
+    return sendOdds(bot, 'classic', msg.channel, left, right)
   }
 )
 
-export function getOdds(bot: SlackClient, challengerId: string, opponentId: string) {
+register(
+  'odds.bo3',
+  'View the match odds. *Usage* `odds.bo3 @opponent` | `odds.bo3 @challenger @opponent`',
+  (bot, msg, cfg, args) => {
+    const left = args.length === 1 ? msg.user : trim(args[0])
+    const right = args.length === 1 ? trim(args[0]) : trim(args[1])
+
+    return sendOdds(bot, 'bo3', msg.channel, left, right)
+  }
+)
+
+function trim(name: string) {
+  if (name === 'ai') {
+    return name
+  }
+
+  return (name || '').slice(2, -1)
+}
+
+function sendOdds(bot: SlackClient, mode: Mode, channel: string, left: string, right: string) {
   const cfg = getConfig()
-  const chal = cfg.roshambo[challengerId]
-  const opp = cfg.roshambo[opponentId]
+  try {
+    const { challenger, opponent } = getOdds(bot, mode, left, right)
+    return bot.postMessage({
+      channel,
+      text: `*${challenger.name}*: ${challenger.text} | *${opponent.name}*: ${opponent.text}`,
+      ...cfg.defaultParams
+    })
+  } catch (ex) {
+    return bot.postMessage({
+      channel,
+      text: ex.message,
+      ...cfg.defaultParams
+    })
+  }
+}
+
+export function getOdds(bot: SlackClient, mode: Mode, challengerId: string, opponentId: string) {
+  const cfg = getConfig()
+  const key = getModeKey(mode)
+  const chal = cfg[key][challengerId]
+  const opp = cfg[key][opponentId]
 
   if (!chal) {
     throw new Error('No Roshambo profile found for challenger')
@@ -71,7 +87,7 @@ export function getOdds(bot: SlackClient, challengerId: string, opponentId: stri
   ]
 
   const chShift = `${neat(shifts[0].white)} ${neat(shifts[1].white)} ${neat(shifts[2].white)}`
-  const opShift = `${neat(shifts[0].black)} ${neat(shifts[1].black)} ${neat(shifts[2].black)}`
+  const opShift = `${neat(shifts[2].black)} ${neat(shifts[1].black)} ${neat(shifts[0].black)}`
 
   return {
     challenger: {

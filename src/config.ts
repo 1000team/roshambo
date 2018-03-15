@@ -6,7 +6,8 @@ const { setConfig, getConfig, register } = setup<Config>(
     emoji: ':fist:',
     channel: 'team-1000-team',
     timezone: 8,
-    roshambo: {}
+    roshambo: {},
+    roshamboBo3: {}
   },
   ['roshambo']
 )
@@ -18,12 +19,19 @@ export async function backfillConfig() {
 
   // Set all players to out of game
   const roshambo = cfg.roshambo
-  const players = Object.keys(roshambo)
-  for (const id of players) {
+  const keys = Object.keys(roshambo)
+  for (const id of keys) {
     roshambo[id].inGame = false
   }
 
+  const bo3 = cfg.roshamboBo3
+  const bo3keys = Object.keys(bo3)
+  for (const id of bo3keys) {
+    bo3[id].inGame = false
+  }
+
   await setConfig('roshambo', roshambo)
+  await setConfig('roshamboBo3', bo3)
 }
 
 export interface Config {
@@ -32,6 +40,7 @@ export interface Config {
   channel: string
   timezone: number
   roshambo: { [userId: string]: Roshambo }
+  roshamboBo3: { [userId: string]: Roshambo }
 }
 
 export interface Roshambo {

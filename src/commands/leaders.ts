@@ -1,15 +1,19 @@
 import { getConfig, register } from '../config'
 import { SlackClient } from 'slacklib'
 import { toStats } from './stats'
-import { getRealname } from './util'
+import { getRealname, Mode, getModeKey } from './util'
 
 register('leaders', 'View the Roshambo leaderboard', (bot, msg) => {
-  return leaders(bot, msg.channel, msg.user)
+  return leaders(bot, 'classic', msg.channel, msg.user)
 })
 
-export async function leaders(bot: SlackClient, channel: string, userId: string) {
+register('leaders.bo3', 'View the Best of 3 Roshambo leaderboard', (bot, msg) => {
+  return leaders(bot, 'bo3', msg.channel, msg.user)
+})
+
+export async function leaders(bot: SlackClient, mode: Mode, channel: string, userId: string) {
   const cfg = getConfig()
-  const posTexts = getLeaders(bot)
+  const posTexts = getLeaders(bot, mode)
   const messages = ['*Roshambo Leaderboard*', ...posTexts.slice(0, 10).map(pos => pos.text)]
 
   const userPosition = posTexts.find(pos => pos.id === userId)!
@@ -25,13 +29,14 @@ export async function leaders(bot: SlackClient, channel: string, userId: string)
   })
 }
 
-export function getLeaders(bot: SlackClient) {
+export function getLeaders(bot: SlackClient, mode: Mode) {
+  const key = getModeKey(mode)
   const cfg = getConfig()
-  const allUsers = Object.keys(cfg.roshambo)
+  const allUsers = Object.keys(cfg[key])
 
   allUsers.sort((l, r) => {
-    const left = cfg.roshambo[l]
-    const right = cfg.roshambo[r]
+    const left = cfg[key][l]
+    const right = cfg[key][r]
 
     const leftRating = left.rating || 1500
     const rightRating = right.rating || 1500
@@ -74,7 +79,7 @@ export function getLeaders(bot: SlackClient) {
   const leaders = allUsers.map((userId, pos) => {
     const userName = getRealname(bot, userId)
 
-    const user = cfg.roshambo[userId]
+    const user = cfg[key][userId]
     return {
       id: userId,
       position: pos + 1,
