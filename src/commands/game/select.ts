@@ -21,7 +21,7 @@ export async function getSelection(
 
   const cfg = getConfig()
   const result = await bot.directMessage(userId, {
-    text: preText + 'Enter your selection: rock, scissors, paper',
+    text: preText + 'Enter your selection: (r) rock, (s) scissors, (p) paper',
     ...cfg.defaultParams
   })
 
@@ -47,7 +47,7 @@ export async function getSelection(
 
 function isValid(selection: string) {
   const lowered = (selection || '').toLowerCase().trim()
-  return lowered === 'rock' || lowered === 'paper' || lowered === 'scissors'
+  return 'rock'.startsWith(lowered) || 'paper'.startsWith(lowered) || 'scissors'.startsWith(lowered)
 }
 
 export class TimeoutError extends Error {}
