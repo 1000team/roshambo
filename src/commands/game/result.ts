@@ -38,8 +38,8 @@ export function getResultText(opts: ResultTextOpts) {
   const preWhite = results.shift.white >= 0 ? '+' : ''
   const preBlack = results.shift.black >= 0 ? '+' : ''
 
-  const diffWhite = chDiff < 0 ? '-' : '+'
-  const diffBlack = opDiff < 0 ? '-' : '+'
+  const diffWhite = chDiff < 0 ? '--' : '++'
+  const diffBlack = opDiff < 0 ? '--' : '++'
 
   const shiftText = [
     `*${preWhite}${results.shift.white} ${diffWhite}#${Math.abs(chDiff)}*`,
