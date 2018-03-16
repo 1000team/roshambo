@@ -9,7 +9,7 @@ const { setConfig, getConfig, register } = setup<Config>(
     roshambo: {},
     roshamboBo3: {}
   },
-  ['roshambo']
+  ['roshambo', 'roshamboBo3']
 )
 
 export { setConfig, getConfig, register }
