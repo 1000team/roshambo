@@ -29,3 +29,9 @@ export function getModeKey(mode: Mode) {
 export function sleep(time: number) {
   return new Promise(resolve => setTimeout(() => resolve(), time))
 }
+
+export enum Selection {
+  Rock = 'r',
+  Scissors = 's',
+  Paper = 'p'
+}

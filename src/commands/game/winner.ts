@@ -1,17 +1,19 @@
-export function getWinner(left: string, right: string) {
+import { Selection } from '../util'
+
+export function getWinner(left: Selection, right: Selection) {
   if (left === right) {
     return Result.Draw
   }
 
   switch (left) {
-    case 'rock':
-      return right === 'scissors' ? Result.Left : Result.Right
+    case Selection.Rock:
+      return right === Selection.Scissors ? Result.Left : Result.Right
 
-    case 'paper':
-      return right === 'rock' ? Result.Left : Result.Right
+    case Selection.Paper:
+      return right === Selection.Rock ? Result.Left : Result.Right
 
-    case 'scissors':
-      return right === 'paper' ? Result.Left : Result.Right
+    case Selection.Scissors:
+      return right === Selection.Paper ? Result.Left : Result.Right
   }
 
   throw new Error('Unable to determine Roshambo winner: Invalid selections')

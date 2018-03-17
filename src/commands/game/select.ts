@@ -1,21 +1,22 @@
 import { SlackClient, readMessage } from 'slacklib'
 import { getConfig } from '../../config'
+import { Selection } from '../util'
 
 export async function getSelection(
   bot: SlackClient,
   userId: string,
   timeout: number,
   preText = ''
-): Promise<string> {
+): Promise<Selection> {
   if (userId === 'ai') {
     const guess = Math.round(Math.random() * 2)
     switch (guess) {
       case 0:
-        return 'rock'
+        return Selection.Rock
       case 1:
-        return 'scissors'
+        return Selection.Scissors
       case 2:
-        return 'paper'
+        return Selection.Paper
     }
   }
 
@@ -37,17 +38,27 @@ export async function getSelection(
     throw new TimeoutError()
   })
 
-  if (!isValid(response)) {
+  const selection = toSelection((response || '').trim().slice(0, 1))
+  if (!selection) {
     return getSelection(bot, userId, timeout, 'Invalid selection. ')
   }
 
   await bot.directMessage(userId, { text: 'Response accepted', ...cfg.defaultParams })
-  return response.toLowerCase().trim()
+  return selection
 }
 
-function isValid(selection: string) {
-  const lowered = (selection || '').toLowerCase().trim()
-  return 'rock'.startsWith(lowered) || 'paper'.startsWith(lowered) || 'scissors'.startsWith(lowered)
+function toSelection(selection: string) {
+  switch (selection) {
+    case 'r':
+      return Selection.Rock
+
+    case 's':
+      return Selection.Scissors
+
+    case 'p':
+      return Selection.Paper
+  }
+  return
 }
 
 export class TimeoutError extends Error {}
