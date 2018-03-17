@@ -62,3 +62,16 @@ function toSelection(selection: string) {
 }
 
 export class TimeoutError extends Error {}
+
+export function toString(selection: Selection): string {
+  switch (selection) {
+    case Selection.Paper:
+      return 'paper :raised_back_of_hand:'
+
+    case Selection.Rock:
+      return 'rock :fist:'
+
+    case Selection.Scissors:
+      return 'scissors :v:'
+  }
+}
