@@ -1,9 +1,10 @@
 import { SlackClient } from 'slacklib'
 import { toStats, getUserStats } from '../stats'
-import { getRealname } from '../util'
+import { getRealname, Mode } from '../util'
 
 export interface ResultTextOpts {
   bot: SlackClient
+  mode: Mode
   results: EloResult & { pre: Position; post: Position }
   challengerId: string
   opponentId: string
@@ -24,7 +25,7 @@ interface EloResult {
 }
 
 export function getResultText(opts: ResultTextOpts) {
-  const { bot, challengerId, opponentId, results } = opts
+  const { bot, challengerId, opponentId, results, mode } = opts
   const { pre, post } = results
 
   const challenger = getRealname(bot, challengerId)
@@ -32,18 +33,21 @@ export function getResultText(opts: ResultTextOpts) {
   const chDiff = pre.ch - post.ch
   const opDiff = pre.opp - post.opp
 
-  const leftStats = getUserStats(challengerId)
-  const rightStats = getUserStats(opponentId)
+  const leftStats = getUserStats(mode, challengerId)
+  const rightStats = getUserStats(mode, opponentId)
 
   const preWhite = results.shift.white >= 0 ? '+' : ''
   const preBlack = results.shift.black >= 0 ? '+' : ''
 
-  const diffWhite = chDiff < 0 ? '--' : '++'
-  const diffBlack = opDiff < 0 ? '--' : '++'
+  const abcCh = Math.abs(chDiff)
+  const absOp = Math.abs(opDiff)
+
+  const diffWhite = chDiff === 0 ? '' : chDiff < 0 ? `--#${abcCh}` : `++#${abcCh}`
+  const diffBlack = opDiff === 0 ? '' : opDiff < 0 ? `--#${absOp}` : `++#${absOp}`
 
   const shiftText = [
-    `*${preWhite}${results.shift.white} ${diffWhite}#${Math.abs(chDiff)}*`,
-    `*${preBlack}${results.shift.black} ${diffBlack}#${Math.abs(opDiff)}*`
+    `*${preWhite}${results.shift.white} ${diffWhite}*`,
+    `*${preBlack}${results.shift.black} ${diffBlack}*`
   ]
 
   const responses = [

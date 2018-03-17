@@ -1,17 +1,24 @@
 import { getConfig, register } from '../config'
 import { SlackClient } from 'slacklib'
+import { Mode, getModeKey } from './util'
 
 register('stats', 'View your Roshambo stats', (bot, msg) => {
   return stats(bot, msg.user, msg.channel)
 })
 
 export async function stats(bot: SlackClient, userId: string, channel: string) {
-  const stats = getUserStats(userId)
   const cfg = getConfig()
-  const total = stats.wins + stats.losses + stats.draws
+  const modes: Mode[] = ['classic', 'ls', 'bo3']
+  const messages: string[] = ['*Your statistics*:']
+  for (const mode of modes) {
+    const stats = getUserStats(mode, userId)
+    const total = stats.wins + stats.losses + stats.draws
+    messages.push(`[*${mode}*]: Played: ${total}, ${toStats(stats)}`)
+  }
+
   return bot.postMessage({
     channel,
-    text: `*Your statistics*: Played: ${total}, ${toStats(stats)}`,
+    text: messages.join('\n'),
     ...cfg.defaultParams
   })
 }
@@ -27,9 +34,10 @@ export function toStats({ rating, wins, losses, draws }: Stats) {
   return `*${rating || 1500}* ${wins}W/${losses}L/${draws}D`
 }
 
-export function getUserStats(userId: string) {
+export function getUserStats(mode: Mode, userId: string) {
+  const key = getModeKey(mode)
   const cfg = getConfig()
-  const user = cfg.roshambo[userId]
+  const user = cfg[key][userId]
 
   if (!user) {
     return {

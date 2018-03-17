@@ -15,7 +15,7 @@ export function getRealname(bot: SlackClient, id: string) {
   return
 }
 
-export type Mode = 'classic' | 'bo3'
+export type Mode = 'classic' | 'bo3' | 'ls'
 
 export function getModeKey(mode: Mode) {
   switch (mode) {
@@ -23,15 +23,11 @@ export function getModeKey(mode: Mode) {
       return 'roshambo'
     case 'bo3':
       return 'roshamboBo3'
+    case 'ls':
+      return 'roshamboLS'
   }
 }
 
 export function sleep(time: number) {
   return new Promise(resolve => setTimeout(() => resolve(), time))
-}
-
-export enum Selection {
-  Rock = 'r',
-  Scissors = 's',
-  Paper = 'p'
 }

@@ -1,4 +1,5 @@
 import './play'
+import './ls'
 import './bo3'
 import './leaders'
 import './stats'

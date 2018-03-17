@@ -2,8 +2,7 @@ import { SlackClient } from 'slacklib'
 import { getConfig } from '../../config'
 import { getOdds } from '../odds'
 import { getRealname, sleep } from '../util'
-import { getSelection, TimeoutError, toString } from './select'
-import { getWinner, Result } from './winner'
+import { getSelection, TimeoutError, getWinner, Result, toMessage } from './select'
 import { getUserPositions } from './update'
 import { Mode } from '../util'
 export { getResultText } from './result'
@@ -79,18 +78,21 @@ export async function game(options: GameOptions): Promise<GameResult | null> {
 
   try {
     const [left, right] = await Promise.all([
-      getSelection(bot, challengerId, timeout),
+      getSelection(bot, mode, challengerId, timeout),
       sleep(250).then(() =>
-        getSelection(bot, opponentId, timeout, `${challenger} has challenged you to Roshambo.\n`)
+        getSelection(
+          bot,
+          mode,
+          opponentId,
+          timeout,
+          `${challenger} has challenged you to Roshambo.\n`
+        )
       )
     ])
 
     const winner = getWinner(left, right)
 
-    const pre = [
-      `*Challenger*: ${challenger} picked ${toString(left)}`,
-      `*Opponent*: ${opponent} picked ${toString(right)}`
-    ]
+    const pre = [toMessage({ name: challenger, select: left }, { name: opponent, select: right })]
 
     switch (winner) {
       case Result.Draw:

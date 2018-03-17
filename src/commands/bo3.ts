@@ -1,6 +1,6 @@
 import { register, getConfig } from '../config'
 import { game, setInGame, GameOptions, GameResult, updateResults, getResultText } from './game'
-import { Result } from './game/winner'
+import { Result } from './game/select'
 import { SlackClient } from 'slacklib'
 import { getRealname, sleep } from './util'
 
@@ -8,10 +8,11 @@ register(
   'bo3',
   'Three times the diplomacy of classical Roshambo. *Usage* `bo3 @user`',
   async (bot, msg, cfg, args) => {
+    const mode = 'bo3'
     const channel = msg.channel
     const challengerId = msg.user
     const opponentId = args[0] === 'ai' ? 'ai' : (args[0] || '').slice(2, -1)
-    const isOkayToStart = await setInGame('bo3', msg.user, opponentId, true)
+    const isOkayToStart = await setInGame(mode, msg.user, opponentId, true)
     if (!isOkayToStart) {
       return bot.postMessage({
         channel,
@@ -22,7 +23,7 @@ register(
 
     const opts: GameOptions = {
       bot,
-      mode: 'bo3',
+      mode,
       channel,
       challengerId,
       opponentId
@@ -59,8 +60,8 @@ register(
     const winnerName = score > 0 ? chName : opName
     const winner = score > 0 ? 1 : -1
 
-    const results = await updateResults(bot, 'bo3', challengerId, opponentId, winner)
-    const resultsText = getResultText({ bot, results, challengerId, opponentId })
+    const results = await updateResults(bot, mode, challengerId, opponentId, winner)
+    const resultsText = getResultText({ bot, mode, results, challengerId, opponentId })
 
     await bot.postMessage({
       channel,
@@ -70,7 +71,7 @@ register(
 
     try {
     } finally {
-      setInGame('bo3', msg.user, opponentId, false)
+      setInGame(mode, msg.user, opponentId, false)
     }
   }
 )

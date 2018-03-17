@@ -2,10 +2,10 @@ import { register } from '../config'
 import { game, setInGame, updateResults, getResultText } from './game'
 
 register(
-  'play',
-  `Highly advanced and diplomatic decision maker and argument resolver. *Usage*: \`play @user\``,
+  'ls',
+  `Decision making and argument resolving from the year 2074. *Usage*: \`ls @user\``,
   async (bot, msg, cfg, args) => {
-    const mode = 'classic'
+    const mode = 'ls'
     const channel = msg.channel
     const challengerId = msg.user
     const opponentId = args[0] === 'ai' ? 'ai' : (args[0] || '').slice(2, -1)

@@ -3,13 +3,18 @@ import { SlackClient } from 'slacklib'
 import { toStats } from './stats'
 import { getRealname, Mode, getModeKey } from './util'
 
-register('leaders', 'View the Roshambo leaderboard', (bot, msg) => {
-  return leaders(bot, 'classic', msg.channel, msg.user)
-})
+register(
+  'leaders',
+  'View the Roshambo leaderboard. ls = lizardspok, bo3 = best of 3.\n    *Usage*: leaders (bo3 | ls) -- _bo3 and ls are optional_',
+  (bot, msg, _, args) => {
+    const mode = args[0]
+    if (mode === 'bo3' || mode === 'ls') {
+      return leaders(bot, mode, msg.channel, msg.user)
+    }
 
-register('leaders.bo3', 'View the Best of 3 Roshambo leaderboard', (bot, msg) => {
-  return leaders(bot, 'bo3', msg.channel, msg.user)
-})
+    return leaders(bot, 'classic', msg.channel, msg.user)
+  }
+)
 
 export async function leaders(bot: SlackClient, mode: Mode, channel: string, userId: string) {
   const cfg = getConfig()

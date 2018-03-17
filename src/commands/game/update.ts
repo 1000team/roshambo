@@ -1,9 +1,9 @@
 import * as elo from 'ratings'
 import { getConfig, setConfig, Roshambo } from '../../config'
-import { Result } from './winner'
 import { getLeaders } from '../leaders'
 import { SlackClient } from 'slacklib'
 import { getModeKey, Mode } from '../util'
+import { Result } from './select'
 
 export async function updateResults(
   bot: SlackClient,

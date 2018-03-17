@@ -7,31 +7,30 @@ const { setConfig, getConfig, register } = setup<Config>(
     channel: 'team-1000-team',
     timezone: 8,
     roshambo: {},
-    roshamboBo3: {}
+    roshamboBo3: {},
+    roshamboLS: {}
   },
-  ['roshambo', 'roshamboBo3']
+  ['roshambo', 'roshamboBo3', 'roshamboLS']
 )
 
 export { setConfig, getConfig, register }
 
 export async function backfillConfig() {
-  const cfg: any = getConfig()
+  const cfg = getConfig()
+
+  const reset = (key: 'roshambo' | 'roshamboBo3' | 'roshamboLS') => {
+    const game = cfg[key]
+    const keys = Object.keys(game)
+    for (const id of keys) {
+      game[id].inGame = false
+    }
+    return setConfig(key, game)
+  }
 
   // Set all players to out of game
-  const roshambo = cfg.roshambo
-  const keys = Object.keys(roshambo)
-  for (const id of keys) {
-    roshambo[id].inGame = false
-  }
-
-  const bo3 = cfg.roshamboBo3
-  const bo3keys = Object.keys(bo3)
-  for (const id of bo3keys) {
-    bo3[id].inGame = false
-  }
-
-  await setConfig('roshambo', roshambo)
-  await setConfig('roshamboBo3', bo3)
+  await reset('roshambo')
+  await reset('roshamboBo3')
+  await reset('roshamboLS')
 }
 
 export interface Config {
@@ -41,6 +40,7 @@ export interface Config {
   timezone: number
   roshambo: { [userId: string]: Roshambo }
   roshamboBo3: { [userId: string]: Roshambo }
+  roshamboLS: { [userId: string]: Roshambo }
 }
 
 export interface Roshambo {
