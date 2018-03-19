@@ -1,15 +1,7 @@
 import { SlackClient, Chat } from 'slacklib'
 import { getOdds } from '../odds'
 import { getRealname, sleep, getModeName } from '../util'
-import {
-  getSelection,
-  TimeoutError,
-  getWinner,
-  Result,
-  toMessage,
-  toString,
-  Selection
-} from './select'
+import { getSelection, getWinner, Result, toMessage, toString, Selection } from './select'
 import { getUserPositions } from './update'
 import { Mode } from '../util'
 import { setInGame, updateResults } from './update'
@@ -212,6 +204,17 @@ async function runGame(options: GameOptions): Promise<GameResult | null> {
       )
     ])
 
+    if (!left || !right) {
+      const chickens = []
+      if (!left) chickens.push(challenger)
+      if (!right) chickens.push(challenger)
+      await bot.postMessage({
+        channel,
+        text: `Looks like ${chickens.join(' and ')} chickened out! :hatched_chick:`
+      })
+      return null
+    }
+
     const winner = getWinner(left, right)
 
     const pre = [toMessage({ name: challenger, select: left }, { name: opponent, select: right })]
@@ -223,14 +226,6 @@ async function runGame(options: GameOptions): Promise<GameResult | null> {
       preText: pre
     }
   } catch (ex) {
-    if (ex instanceof TimeoutError) {
-      await bot.postMessage({
-        channel,
-        text: `Looks like ${challenger} and ${opponent} chickened out! :hatched_chick:`
-      })
-      return null
-    }
-
     await bot.postMessage({
       channel,
       text: `Failed to complete Roshambo: ${ex.message || ex}`
