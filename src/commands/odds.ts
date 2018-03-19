@@ -89,11 +89,13 @@ export function getOdds(bot: SlackClient, mode: Mode, challengerId: string, oppo
   return {
     challenger: {
       name: chalName,
-      text: `${chPercent}% ${chShift}`
+      text: `${chPercent}% ${chShift}`,
+      rating: chal.rating
     },
     opponent: {
       name: oppName,
-      text: `${opPercent}% ${opShift}`
+      text: `${opPercent}% ${opShift}`,
+      rating: opp.rating
     }
   }
 }
