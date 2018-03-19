@@ -5,7 +5,7 @@ export enum Selection {
   Rock = 'r',
   Scissors = 's',
   Paper = 'p',
-  Spok = 'k',
+  Spock = 'k',
   Lizard = 'l'
 }
 
@@ -29,7 +29,7 @@ export async function getSelection(
       case 3:
         return Selection.Lizard
       case 4:
-        return Selection.Spok
+        return Selection.Spock
     }
   }
 
@@ -69,13 +69,13 @@ const descriptions: { [sel in Selection]: string } = {
   [Selection.Paper]: 'paper',
   [Selection.Scissors]: 'scissors',
   [Selection.Lizard]: 'lizard',
-  [Selection.Spok]: 'spok'
+  [Selection.Spock]: 'spock'
 }
 
 const validSelections: { [mode in Mode]: Selection[] } = {
   classic: [Selection.Rock, Selection.Paper, Selection.Scissors],
   bo3: [Selection.Rock, Selection.Paper, Selection.Scissors],
-  ls: [Selection.Rock, Selection.Paper, Selection.Scissors, Selection.Lizard, Selection.Spok]
+  ls: [Selection.Rock, Selection.Paper, Selection.Scissors, Selection.Lizard, Selection.Spock]
 }
 
 function toSelection(mode: Mode, selection: string) {
@@ -90,7 +90,7 @@ function toSelection(mode: Mode, selection: string) {
       return Selection.Paper
 
     case 'k':
-      return Selection.Spok
+      return Selection.Spock
 
     case 'l':
       return Selection.Lizard
@@ -114,8 +114,8 @@ export function toString(selection: Selection): string {
     case Selection.Lizard:
       return '(lizard) :lizard:'
 
-    case Selection.Spok:
-      return '(spok) :spock-hand:'
+    case Selection.Spock:
+      return '(spock) :spock-hand:'
   }
 }
 
@@ -134,15 +134,15 @@ export function getWinner(left: Selection, right: Selection) {
       return right === Selection.Scissors || right === Selection.Lizard ? Result.Left : Result.Right
 
     case Selection.Paper:
-      return right === Selection.Rock || right === Selection.Spok ? Result.Left : Result.Right
+      return right === Selection.Rock || right === Selection.Spock ? Result.Left : Result.Right
 
     case Selection.Scissors:
       return right === Selection.Paper || right === Selection.Lizard ? Result.Left : Result.Right
 
     case Selection.Lizard:
-      return right === Selection.Spok || right === Selection.Paper ? Result.Left : Result.Right
+      return right === Selection.Spock || right === Selection.Paper ? Result.Left : Result.Right
 
-    case Selection.Spok:
+    case Selection.Spock:
       return right === Selection.Scissors || right === Selection.Rock ? Result.Left : Result.Right
   }
 
@@ -180,7 +180,7 @@ export function toMessage(left: MsgOpts, right: MsgOpts) {
     case Selection.Lizard:
       return rsel === Selection.Paper ? toText('devoured') : toText('poisoned')
 
-    case Selection.Spok:
+    case Selection.Spock:
       return rsel === Selection.Scissors ? toText('smashed') : toText('vaporized')
   }
 }
