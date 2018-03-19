@@ -207,7 +207,7 @@ async function runGame(options: GameOptions): Promise<GameResult | null> {
     if (!left || !right) {
       const chickens = []
       if (!left) chickens.push(challenger)
-      if (!right) chickens.push(challenger)
+      if (!right) chickens.push(opponent)
       await bot.postMessage({
         channel,
         text: `Looks like ${chickens.join(' and ')} chickened out! :hatched_chick:`
