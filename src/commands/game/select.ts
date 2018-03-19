@@ -15,7 +15,7 @@ export async function getSelection(
   userId: string,
   timeout: number,
   preText = ''
-): Promise<Selection> {
+): Promise<Selection | null> {
   const max = mode === 'ls' ? 4 : 2
   if (userId === 'ai') {
     const guess = Math.round(Math.random() * max)
@@ -46,9 +46,12 @@ export async function getSelection(
     throw new Error(`Failed to message user: ${(result as any).error}`)
   }
 
-  const response = await readMessage(bot, userId, { directOnly: true, timeout }).catch(() => {
-    throw new TimeoutError()
-  })
+  let response: string | undefined
+  try {
+    response = await readMessage(bot, userId, { directOnly: true, timeout })
+  } catch (ex) {
+    return null
+  }
 
   const selection = toSelection(mode, (response || '').trim().slice(0, 1))
   if (!selection) {
@@ -95,8 +98,6 @@ function toSelection(mode: Mode, selection: string) {
   }
   return
 }
-
-export class TimeoutError extends Error {}
 
 export function toString(selection: Selection): string {
   switch (selection) {
