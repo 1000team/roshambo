@@ -1,4 +1,6 @@
 import { setup } from 'slacklib'
+import { Mode } from './commands/util'
+import { Result } from './commands/game/select'
 
 const { setConfig, getConfig, register } = setup<Config>(
   {
@@ -7,7 +9,16 @@ const { setConfig, getConfig, register } = setup<Config>(
     channel: 'team-1000-team',
     timezone: 8,
     roshambo: {},
-    roshamboLS: {}
+    roshamboLS: {},
+    tournament: {
+      channel: 'team-1000-team',
+      active: false,
+      mode: 'classic',
+      matches: [],
+      signup: false,
+      round: 0,
+      users: []
+    }
   },
   ['roshambo', 'roshamboLS']
 )
@@ -38,7 +49,28 @@ export interface Config {
   timezone: number
   roshambo: { [userId: string]: Roshambo }
   roshamboLS: { [userId: string]: Roshambo }
+  tournament: Tournament
 }
+
+export interface Tournament {
+  channel: string
+  active: boolean
+  signup: boolean
+  mode: Mode
+  users: string[]
+  round: number
+  matches: Match[]
+}
+
+export interface Match {
+  challenger: { id: string }
+  opponent: { id: string } | Bye
+
+  /** null indicates a chicken out scenario. Chickening out in a tournment will be a loss */
+  result?: Result | null
+}
+
+export type Bye = 'bye'
 
 export interface Roshambo {
   rating: number

@@ -72,6 +72,10 @@ export async function setInGame(
   const challenger = history[challengerId] || { ...defaultHistory, userId: challengerId }
   const opponent = history[opponentId] || { ...defaultHistory, userId: opponentId }
 
+  /**
+   * TODO: Check if either player is in an active tournament
+   */
+
   if (inGame && (challenger.inGame || opponent.inGame)) {
     return false
   }
