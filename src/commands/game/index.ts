@@ -1,11 +1,11 @@
-import { SlackClient } from 'slacklib'
+import { SlackClient, Chat } from 'slacklib'
 import { getOdds } from '../odds'
-import { getRealname, sleep } from '../util'
+import { getRealname, sleep, getModeName } from '../util'
 import { getSelection, TimeoutError, getWinner, Result, toMessage } from './select'
 import { getUserPositions } from './update'
 import { Mode } from '../util'
-export { getResultText } from './result'
-export { setInGame, updateResults } from './update'
+import { setInGame, updateResults } from './update'
+import { getResultText } from './result'
 
 export interface GameOptions {
   bot: SlackClient
@@ -13,6 +13,7 @@ export interface GameOptions {
   channel: string
   challengerId: string
   opponentId: string
+  preGameText?: string
   timeout?: number
 }
 
@@ -23,8 +24,104 @@ export interface GameResult {
   preText: string[]
 }
 
-export async function game(options: GameOptions): Promise<GameResult | null> {
-  const { bot, channel, challengerId, opponentId, mode, timeout = 120 } = options
+export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args: string[]) {
+  const channel = msg.channel
+  const challengerId = msg.user
+  const opponentId = args[0] === 'ai' ? 'ai' : (args[0] || '').slice(2, -1)
+  const challenger = getRealname(bot, challengerId)!
+  const opponent = getRealname(bot, opponentId)!
+
+  const isValidOpponent = !!opponent
+  if (!isValidOpponent) {
+    return bot.postMessage({
+      channel: msg.channel,
+      text: 'Unable to start: Cannot find a player with that name'
+    })
+  }
+
+  const isOkayToStart = await setInGame(mode, challengerId, opponentId, true)
+  if (!isOkayToStart) {
+    return bot.postMessage({
+      channel: msg.channel,
+      text: 'Unable to start: Both users can only be in one game at a time'
+    })
+  }
+
+  const winsReqd = raceTo(args[1])
+  const modeText = getModeName(mode)
+  let chalWins = 0
+  let oppWins = 0
+  let gamesPlayed = 0
+
+  try {
+    while (chalWins < winsReqd && oppWins < winsReqd) {
+      if (gamesPlayed > 0) {
+        await bot.postMessage({
+          channel: msg.channel,
+          text: `${modeText} Race to ${winsReqd}: *${challenger}* ${chalWins}/${winsReqd} | *${opponent}* ${oppWins}/${winsReqd}`
+        })
+        await sleep(750)
+      }
+
+      const preGameText =
+        winsReqd > 1 && gamesPlayed === 0
+          ? `*${challenger}* has challenged *${opponent}* to a Race to ${winsReqd}!`
+          : undefined
+
+      const gameResult = await runGame({
+        bot,
+        mode,
+        channel,
+        challengerId,
+        opponentId,
+        preGameText
+      })
+      if (!gameResult) {
+        return
+      }
+
+      const { preText } = gameResult
+      const results = await updateResults(bot, mode, challengerId, opponentId, gameResult.winner)
+      gamesPlayed++
+
+      const resultText = getResultText({
+        bot,
+        mode,
+        results,
+        opponentId,
+        challengerId
+      })
+
+      const messages = [...preText, ...resultText]
+
+      if (gameResult.winner === Result.Left) {
+        chalWins++
+      }
+
+      if (gameResult.winner === Result.Right) {
+        oppWins++
+      }
+
+      const winner = chalWins === winsReqd ? challenger : oppWins === winsReqd ? opponent : null
+      if (winner) {
+        messages.push(
+          '___________________________',
+          `*${winner}* has won the ${modeText} Race to ${winsReqd}!!!`
+        )
+      }
+
+      await bot.postMessage({
+        channel,
+        text: messages.join('\n')
+      })
+    }
+  } finally {
+    await setInGame(mode, challengerId, opponentId, false)
+  }
+}
+
+async function runGame(options: GameOptions): Promise<GameResult | null> {
+  const { bot, channel, challengerId, opponentId, mode, timeout = 180 } = options
 
   // Only allow groups and channels
   const isChannel = channel.startsWith('C') || channel.startsWith('G')
@@ -48,6 +145,7 @@ export async function game(options: GameOptions): Promise<GameResult | null> {
   const challenger = getRealname(bot, challengerId)
   const opponent = getRealname(bot, opponentId)
 
+  // This is a redundant check, but it's a good opportunity to narrow the type
   if (!opponent) {
     return cancel(`Roshambo cancelled: Couldn't find opponent with that name`)
   }
@@ -75,7 +173,7 @@ export async function game(options: GameOptions): Promise<GameResult | null> {
   try {
     const [left, right] = await Promise.all([
       getSelection(bot, mode, challengerId, timeout),
-      sleep(250).then(() =>
+      sleep(750).then(() =>
         getSelection(
           bot,
           mode,
@@ -89,20 +187,6 @@ export async function game(options: GameOptions): Promise<GameResult | null> {
     const winner = getWinner(left, right)
 
     const pre = [toMessage({ name: challenger, select: left }, { name: opponent, select: right })]
-
-    switch (winner) {
-      case Result.Draw:
-        pre.push('*Result*: *Draw*!')
-        break
-
-      case Result.Left:
-        pre.push(`*Result*: *${challenger}* wins!`)
-        break
-
-      case Result.Right:
-        pre.push(`*Result*: *${opponent}* wins!`)
-        break
-    }
 
     return {
       challenger: left,
@@ -125,4 +209,23 @@ export async function game(options: GameOptions): Promise<GameResult | null> {
     })
     return null
   }
+}
+
+export function raceTo(param: string) {
+  const num = Number(param)
+  if (isNaN(num)) {
+    return 1
+  }
+
+  if (num <= 0) {
+    return 1
+  }
+
+  const mod = num % 2
+  const div = num / 2
+  if (mod === 0) {
+    return div
+  }
+
+  return Math.ceil(div)
 }

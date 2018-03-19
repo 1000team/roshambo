@@ -7,7 +7,7 @@ register('stats', 'View your Roshambo stats', (bot, msg) => {
 })
 
 export async function stats(bot: SlackClient, userId: string, channel: string) {
-  const modes: Mode[] = ['classic', 'ls', 'bo3']
+  const modes: Mode[] = ['classic', 'ls']
   const messages: string[] = ['*Your statistics*:']
   for (const mode of modes) {
     const stats = getUserStats(mode, userId)

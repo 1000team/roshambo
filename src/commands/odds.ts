@@ -15,13 +15,13 @@ register(
 )
 
 register(
-  'odds.bo3',
+  'odds.ls',
   'View the match odds. *Usage* `odds.bo3 @opponent` | `odds.bo3 @challenger @opponent`',
   (bot, msg, cfg, args) => {
     const left = args.length === 1 ? msg.user : trim(args[0])
     const right = args.length === 1 ? trim(args[0]) : trim(args[1])
 
-    return sendOdds(bot, 'bo3', msg.channel, left, right)
+    return sendOdds(bot, 'ls', msg.channel, left, right)
   }
 )
 

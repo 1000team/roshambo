@@ -1,14 +1,14 @@
 import { getConfig, register } from '../config'
 import { SlackClient } from 'slacklib'
 import { toStats } from './stats'
-import { getRealname, Mode, getModeKey } from './util'
+import { getRealname, Mode, getModeKey, getModeName } from './util'
 
 register(
   'leaders',
-  'View the Roshambo leaderboard. ls = lizardspock, bo3 = best of 3.\n    *Usage*: leaders (bo3 | ls) -- _bo3 and ls are optional_',
+  'View the Roshambo leaderboard. ls = lizardspock, \n    *Usage*: leaders (ls) -- _ls is optional_',
   (bot, msg, _, args) => {
     const mode = args[0]
-    if (mode === 'bo3' || mode === 'ls') {
+    if (mode === 'ls') {
       return leaders(bot, mode, msg.channel, msg.user)
     }
 
@@ -94,17 +94,4 @@ export function getLeaders(bot: SlackClient, mode: Mode) {
     }
   })
   return leaders
-}
-
-function getModeName(mode: Mode) {
-  switch (mode) {
-    case 'classic':
-      return 'Classic'
-
-    case 'bo3':
-      return 'Best of Three'
-
-    case 'ls':
-      return 'LizardSpock'
-  }
 }
