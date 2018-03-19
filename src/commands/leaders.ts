@@ -17,7 +17,6 @@ register(
 )
 
 export async function leaders(bot: SlackClient, mode: Mode, channel: string, userId: string) {
-  const cfg = getConfig()
   const posTexts = getLeaders(bot, mode)
   const messages = ['*Roshambo Leaderboard*', ...posTexts.slice(0, 10).map(pos => pos.text)]
 
@@ -29,8 +28,7 @@ export async function leaders(bot: SlackClient, mode: Mode, channel: string, use
 
   return bot.postMessage({
     channel,
-    text: messages.join('\n'),
-    ...cfg.defaultParams
+    text: messages.join('\n')
   })
 }
 

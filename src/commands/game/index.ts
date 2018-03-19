@@ -1,5 +1,4 @@
 import { SlackClient } from 'slacklib'
-import { getConfig } from '../../config'
 import { getOdds } from '../odds'
 import { getRealname, sleep } from '../util'
 import { getSelection, TimeoutError, getWinner, Result, toMessage } from './select'
@@ -25,7 +24,6 @@ export interface GameResult {
 }
 
 export async function game(options: GameOptions): Promise<GameResult | null> {
-  const cfg = getConfig()
   const { bot, channel, challengerId, opponentId, mode, timeout = 120 } = options
 
   // Only allow groups and channels
@@ -33,14 +31,13 @@ export async function game(options: GameOptions): Promise<GameResult | null> {
   if (!isChannel) {
     await bot.postMessage({
       channel,
-      text: 'This feature must be used in a channel or group',
-      ...cfg.defaultParams
+      text: 'This feature must be used in a channel or group'
     })
     return null
   }
 
   const cancel = async (text: string) => {
-    await bot.postMessage({ channel, text, ...cfg.defaultParams })
+    await bot.postMessage({ channel, text })
     return null
   }
 
@@ -72,8 +69,7 @@ export async function game(options: GameOptions): Promise<GameResult | null> {
       `*#${prePos.ch} ${challenger}* (${odds.challenger.text})`,
       'versus',
       `*#${prePos.opp} ${opponent}* (${odds.opponent.text})!`
-    ].join(' '),
-    ...cfg.defaultParams
+    ].join(' ')
   })
 
   try {
@@ -118,16 +114,14 @@ export async function game(options: GameOptions): Promise<GameResult | null> {
     if (ex instanceof TimeoutError) {
       await bot.postMessage({
         channel,
-        text: `Looks like ${challenger} and ${opponent} chickened out! :hatched_chick:`,
-        ...cfg.defaultParams
+        text: `Looks like ${challenger} and ${opponent} chickened out! :hatched_chick:`
       })
       return null
     }
 
     await bot.postMessage({
       channel,
-      text: `Failed to complete Roshambo: ${ex.message || ex}`,
-      ...cfg.defaultParams
+      text: `Failed to complete Roshambo: ${ex.message || ex}`
     })
     return null
   }

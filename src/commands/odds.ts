@@ -34,19 +34,16 @@ function trim(name: string) {
 }
 
 function sendOdds(bot: SlackClient, mode: Mode, channel: string, left: string, right: string) {
-  const cfg = getConfig()
   try {
     const { challenger, opponent } = getOdds(bot, mode, left, right)
     return bot.postMessage({
       channel,
-      text: `*${challenger.name}*: ${challenger.text} | *${opponent.name}*: ${opponent.text}`,
-      ...cfg.defaultParams
+      text: `*${challenger.name}*: ${challenger.text} | *${opponent.name}*: ${opponent.text}`
     })
   } catch (ex) {
     return bot.postMessage({
       channel,
-      text: ex.message,
-      ...cfg.defaultParams
+      text: ex.message
     })
   }
 }

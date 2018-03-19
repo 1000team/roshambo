@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "ratings": "^0.4.2",
-    "slacklib": "^2.1.0"
+    "slacklib": "^2.2.0"
   },
   "keywords": [],
   "license": "MIT",

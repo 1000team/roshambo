@@ -1,5 +1,4 @@
 import { SlackClient, readMessage } from 'slacklib'
-import { getConfig } from '../../config'
 import { Mode } from '../util'
 
 export enum Selection {
@@ -17,8 +16,9 @@ export async function getSelection(
   timeout: number,
   preText = ''
 ): Promise<Selection> {
+  const max = mode === 'ls' ? 4 : 2
   if (userId === 'ai') {
-    const guess = Math.round(Math.random() * 2)
+    const guess = Math.round(Math.random() * max)
     switch (guess) {
       case 0:
         return Selection.Rock
@@ -26,14 +26,16 @@ export async function getSelection(
         return Selection.Scissors
       case 2:
         return Selection.Paper
+      case 3:
+        return Selection.Lizard
+      case 4:
+        return Selection.Spok
     }
   }
 
-  const cfg = getConfig()
   const available = validSelections[mode].map(sel => `(*${sel}*) ${descriptions[sel]}`).join(', ')
   const result = await bot.directMessage(userId, {
-    text: preText + `Enter your selection: ${available}`,
-    ...cfg.defaultParams
+    text: preText + `Enter your selection: ${available}`
   })
 
   if (!result) {
@@ -58,7 +60,7 @@ export async function getSelection(
     return getSelection(bot, mode, userId, timeout, 'Invalid selection. ')
   }
 
-  await bot.directMessage(userId, { text: 'Response accepted', ...cfg.defaultParams })
+  await bot.directMessage(userId, { text: 'Response accepted' })
   return selection
 }
 
@@ -160,7 +162,7 @@ export function toMessage(left: MsgOpts, right: MsgOpts) {
   const rname = loser.name
   const rtext = toString(rsel)
   if (lsel === rsel) {
-    return `${winner.name} and ${loser.name} both picked ${lsel}!`
+    return `${winner.name} and ${loser.name} both picked ${toString(lsel)}!`
   }
 
   const toText = (text: string) => `*${lname}* ${ltext} ${text} *${rname}* ${rtext}!`

@@ -1,4 +1,4 @@
-import { register, getConfig } from '../config'
+import { register } from '../config'
 import { game, setInGame, GameOptions, GameResult, updateResults, getResultText } from './game'
 import { Result } from './game/select'
 import { SlackClient } from 'slacklib'
@@ -16,8 +16,7 @@ register(
     if (!isOkayToStart) {
       return bot.postMessage({
         channel,
-        text: 'Unable to start: Both users can only be in one game at a time',
-        ...cfg.defaultParams
+        text: 'Unable to start: Both users can only be in one game at a time'
       })
     }
 
@@ -50,8 +49,7 @@ register(
       await sleep(1000)
       await bot.postMessage({
         channel,
-        text: text.join('\n'),
-        ...cfg.defaultParams
+        text: text.join('\n')
       })
       score += result.winner
       await sleep(1000)
@@ -65,8 +63,7 @@ register(
 
     await bot.postMessage({
       channel,
-      text: [`The winner of the best of 3 is: *${winnerName}*!!!`, ...resultsText].join('\n'),
-      ...cfg.defaultParams
+      text: [`The winner of the best of 3 is: *${winnerName}*!!!`, ...resultsText].join('\n')
     })
 
     try {
@@ -90,8 +87,7 @@ async function getResult(bot: SlackClient, opts: GameOptions): Promise<GameResul
       text: [
         `*${leftName}*: ${result.challenger}, *${rightName}*: ${result.opponent}`,
         '*Result*: Draw! ... Replaying ...'
-      ].join('\n'),
-      ...getConfig().defaultParams
+      ].join('\n')
     })
     return getResult(bot, opts)
   }

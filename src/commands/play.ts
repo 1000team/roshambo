@@ -13,8 +13,7 @@ register(
     if (!isOkayToStart) {
       return bot.postMessage({
         channel: msg.channel,
-        text: 'Unable to start: Both users can only be in one game at a time',
-        ...cfg.defaultParams
+        text: 'Unable to start: Both users can only be in one game at a time'
       })
     }
 
@@ -37,8 +36,7 @@ register(
 
       await bot.postMessage({
         channel,
-        text: [...preText, ...resultText].join('\n'),
-        ...cfg.defaultParams
+        text: [...preText, ...resultText].join('\n')
       })
     } finally {
       await setInGame(mode, msg.user, opponentId, false)
