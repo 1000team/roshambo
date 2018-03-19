@@ -35,7 +35,7 @@ export async function getSelection(
 
   const available = validSelections[mode].map(sel => `(*${sel}*) ${descriptions[sel]}`).join(', ')
   const result = await bot.directMessage(userId, {
-    text: preText + `Enter your selection: ${available}`
+    text: `${preText ? preText + '\n' : ''}Enter your selection: ${available}`
   })
 
   if (!result) {
@@ -60,7 +60,6 @@ export async function getSelection(
     return getSelection(bot, mode, userId, timeout, 'Invalid selection. ')
   }
 
-  await bot.directMessage(userId, { text: 'Response accepted' })
   return selection
 }
 

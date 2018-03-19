@@ -14,6 +14,8 @@ export interface GameOptions {
   challengerId: string
   opponentId: string
   preGameText?: string
+  preChallengerText?: string
+  preOpponentText?: string
   timeout?: number
 }
 
@@ -52,6 +54,8 @@ export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args
   let chalWins = 0
   let oppWins = 0
   let gamesPlayed = 0
+  let preChallengerText = undefined
+  let preOpponentText = undefined
 
   try {
     while (chalWins < winsReqd && oppWins < winsReqd) {
@@ -74,7 +78,9 @@ export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args
         channel,
         challengerId,
         opponentId,
-        preGameText
+        preGameText,
+        preChallengerText,
+        preOpponentText
       })
       if (!gameResult) {
         return
@@ -94,12 +100,23 @@ export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args
 
       const messages = [...preText, ...resultText]
 
-      if (gameResult.winner === Result.Left) {
-        chalWins++
-      }
+      switch (gameResult.winner) {
+        case Result.Left:
+          chalWins++
+          preChallengerText = 'You won the previous round :heavy_check_mark:'
+          preOpponentText = 'You lost the previous round :x:'
+          break
 
-      if (gameResult.winner === Result.Right) {
-        oppWins++
+        case Result.Draw:
+          preChallengerText = 'You drew the previous round :heavy_minus_sign:'
+          preOpponentText = 'You drew the previous round :heavy_minus_sign:'
+          break
+
+        case Result.Right:
+          oppWins++
+          preChallengerText = 'You lost the previous round :x:'
+          preOpponentText = 'You won the previous round :heavy_check_mark:'
+          break
       }
 
       const winner = chalWins === winsReqd ? challenger : oppWins === winsReqd ? opponent : null
@@ -172,14 +189,14 @@ async function runGame(options: GameOptions): Promise<GameResult | null> {
 
   try {
     const [left, right] = await Promise.all([
-      getSelection(bot, mode, challengerId, timeout),
-      sleep(750).then(() =>
+      getSelection(bot, mode, challengerId, timeout, options.preChallengerText),
+      sleep(1000).then(() =>
         getSelection(
           bot,
           mode,
           opponentId,
           timeout,
-          `${challenger} has challenged you to Roshambo.\n`
+          options.preOpponentText || `${challenger} has challenged you to Roshambo.`
         )
       )
     ])
