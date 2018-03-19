@@ -198,23 +198,22 @@ async function runGame(options: GameOptions): Promise<GameResult | null> {
     ].join(' ')
   })
 
-  const left = await tryGetSelection(bot, channel, challengerId, challenger, mode, timeout)
-  await sleep(750)
-  const right = await tryGetSelection(
-    bot,
-    channel,
-    opponentId,
-    opponent,
-    mode,
-    timeout,
-    `${challenger} has challenged you to Roshambo.\n`
-  )
-  if (!left || !right) {
-    return null
-  }
-
   try {
+    const [left, right] = await Promise.all([
+      getSelection(bot, mode, challengerId, timeout, options.preChallengerText),
+      sleep(1000).then(() =>
+        getSelection(
+          bot,
+          mode,
+          opponentId,
+          timeout,
+          options.preOpponentText || `${challenger} has challenged you to Roshambo.`
+        )
+      )
+    ])
+
     const winner = getWinner(left, right)
+
     const pre = [toMessage({ name: challenger, select: left }, { name: opponent, select: right })]
 
     return {
@@ -224,43 +223,20 @@ async function runGame(options: GameOptions): Promise<GameResult | null> {
       preText: pre
     }
   } catch (ex) {
-    await postFailMessage(bot, channel, ex)
-    return null
-  }
-}
-
-async function tryGetSelection(
-  bot: SlackClient,
-  channel: string,
-  userId: string,
-  username: string,
-  mode: Mode,
-  timeout: number,
-  preText?: string
-) {
-  try {
-    const selection = await getSelection(bot, mode, userId, timeout, preText)
-    return selection
-  } catch (ex) {
     if (ex instanceof TimeoutError) {
       await bot.postMessage({
         channel,
-        text: `Looks like ${username} chickened out! :hatched_chick:`
+        text: `Looks like ${challenger} and ${opponent} chickened out! :hatched_chick:`
       })
       return null
     }
 
-    await postFailMessage(bot, username, ex)
+    await bot.postMessage({
+      channel,
+      text: `Failed to complete Roshambo: ${ex.message || ex}`
+    })
     return null
   }
-}
-
-async function postFailMessage(bot: SlackClient, channel: string, error?: Error) {
-  const errorMessage = (error && error.message) || error
-  return bot.postMessage({
-    channel,
-    text: `Failed to complete Roshambo: ${errorMessage}`
-  })
 }
 
 export function raceTo(param: string) {
