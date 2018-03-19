@@ -1,7 +1,15 @@
 import { SlackClient, Chat } from 'slacklib'
 import { getOdds } from '../odds'
 import { getRealname, sleep, getModeName } from '../util'
-import { getSelection, TimeoutError, getWinner, Result, toMessage } from './select'
+import {
+  getSelection,
+  TimeoutError,
+  getWinner,
+  Result,
+  toMessage,
+  toString,
+  Selection
+} from './select'
 import { getUserPositions } from './update'
 import { Mode } from '../util'
 import { setInGame, updateResults } from './update'
@@ -21,8 +29,8 @@ export interface GameOptions {
 
 export interface GameResult {
   winner: Result
-  challenger: string
-  opponent: string
+  challenger: Selection
+  opponent: Selection
   preText: string[]
 }
 
@@ -82,6 +90,7 @@ export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args
         preChallengerText,
         preOpponentText
       })
+
       if (!gameResult) {
         return
       }
@@ -99,23 +108,25 @@ export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args
       })
 
       const messages = [...preText, ...resultText]
+      const chalSelect: string = `Your opponent selected ${toString(gameResult.opponent)}`
+      const oppSelect: string = `Your opponent selected ${toString(gameResult.challenger)}`
 
       switch (gameResult.winner) {
         case Result.Left:
           chalWins++
-          preChallengerText = 'You won the previous round :heavy_check_mark:'
-          preOpponentText = 'You lost the previous round :x:'
+          preChallengerText = `${chalSelect}. You won the previous round :heavy_check_mark:`
+          preOpponentText = `${oppSelect}. You lost the previous round :x:`
           break
 
         case Result.Draw:
-          preChallengerText = 'You drew the previous round :heavy_minus_sign:'
-          preOpponentText = 'You drew the previous round :heavy_minus_sign:'
+          preChallengerText = `${chalSelect}. You drew the previous round :heavy_minus_sign:`
+          preOpponentText = `${oppSelect}. You drew the previous round :heavy_minus_sign:`
           break
 
         case Result.Right:
           oppWins++
-          preChallengerText = 'You lost the previous round :x:'
-          preOpponentText = 'You won the previous round :heavy_check_mark:'
+          preChallengerText = `${chalSelect}. You lost the previous round :x:`
+          preOpponentText = `${oppSelect}. You won the previous round :heavy_check_mark:`
           break
       }
 
@@ -123,7 +134,7 @@ export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args
       if (winner) {
         messages.push(
           '___________________________',
-          `*${winner}* has won the ${modeText} Race to ${winsReqd}!!!`
+          `*${winner}* has won the ${modeText} Race to ${winsReqd}`
         )
       }
 
