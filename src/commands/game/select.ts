@@ -15,7 +15,7 @@ export async function getSelection(
   userId: string,
   timeout: number,
   preText = ''
-): Promise<Selection> {
+): Promise<Selection | null> {
   const max = mode === 'ls' ? 4 : 2
   if (userId === 'ai') {
     const guess = Math.round(Math.random() * max)
