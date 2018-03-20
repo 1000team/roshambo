@@ -1,6 +1,6 @@
 import { SlackClient, Chat } from 'slacklib'
 import { getOdds } from '../odds'
-import { getRealname, sleep, getModeName } from '../util'
+import { getRealname, getModeName } from '../util'
 import { getSelection, getWinner, Result, toMessage, toString, Selection } from './select'
 import { getUserPositions } from './update'
 import { Mode } from '../util'
@@ -11,6 +11,7 @@ export interface GameOptions {
   bot: SlackClient
   mode: Mode
   channel: string
+  chickenIsLoser?: boolean
   challengerId: string
   opponentId: string
   preGameText?: string
@@ -21,8 +22,8 @@ export interface GameOptions {
 
 export interface GameResult {
   winner: Result
-  challenger: Selection
-  opponent: Selection
+  challenger: Selection | null
+  opponent: Selection | null
   preText: string[]
 }
 
@@ -50,6 +51,7 @@ export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args
   }
 
   const winsReqd = raceTo(args[1])
+  const isRaceToMode = winsReqd > 1
   const modeText = getModeName(mode)
   let chalWins = 0
   let oppWins = 0
@@ -64,11 +66,10 @@ export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args
           channel: msg.channel,
           text: `${modeText} Race to ${winsReqd}: *${challenger}* ${chalWins}/${winsReqd} | *${opponent}* ${oppWins}/${winsReqd}`
         })
-        await sleep(750)
       }
 
       const preGameText =
-        winsReqd > 1 && gamesPlayed === 0
+        isRaceToMode && !gamesPlayed
           ? `*${challenger}* has challenged *${opponent}* to a Race to ${winsReqd}!`
           : undefined
 
@@ -123,7 +124,7 @@ export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args
       }
 
       const winner = chalWins === winsReqd ? challenger : oppWins === winsReqd ? opponent : null
-      if (winner) {
+      if (isRaceToMode && winner) {
         messages.push(
           '___________________________',
           `*${winner}* has won the ${modeText} Race to ${winsReqd}`
@@ -134,13 +135,19 @@ export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args
         channel,
         text: messages.join('\n')
       })
+
+      // If only 1 win is required, we're not in "best of" mode
+      // End the match after any result
+      if (!isRaceToMode) {
+        return
+      }
     }
   } finally {
     await setInGame(mode, challengerId, opponentId, false)
   }
 }
 
-async function runGame(options: GameOptions): Promise<GameResult | null> {
+export async function runGame(options: GameOptions): Promise<GameResult | null> {
   const { bot, channel, challengerId, opponentId, mode, timeout = 180 } = options
 
   // Only allow groups and channels
@@ -193,14 +200,12 @@ async function runGame(options: GameOptions): Promise<GameResult | null> {
   try {
     const [left, right] = await Promise.all([
       getSelection(bot, mode, challengerId, timeout, options.preChallengerText),
-      sleep(1000).then(() =>
-        getSelection(
-          bot,
-          mode,
-          opponentId,
-          timeout,
-          options.preOpponentText || `${challenger} has challenged you to Roshambo.`
-        )
+      getSelection(
+        bot,
+        mode,
+        opponentId,
+        timeout,
+        options.preOpponentText || `${challenger} has challenged you to Roshambo.`
       )
     ])
 
@@ -212,7 +217,10 @@ async function runGame(options: GameOptions): Promise<GameResult | null> {
         channel,
         text: `Looks like ${chickens.join(' and ')} chickened out! :hatched_chick:`
       })
-      return null
+
+      if (!options.chickenIsLoser) {
+        return null
+      }
     }
 
     const winner = getWinner(left, right)

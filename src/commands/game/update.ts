@@ -72,6 +72,11 @@ export async function setInGame(
   const challenger = history[challengerId] || { ...defaultHistory, userId: challengerId }
   const opponent = history[opponentId] || { ...defaultHistory, userId: opponentId }
 
+  const isInTournament = cfg.tournament.users.find(u => u === challengerId || u === opponentId)
+  if (isInTournament) {
+    return false
+  }
+
   if (inGame && (challenger.inGame || opponent.inGame)) {
     return false
   }

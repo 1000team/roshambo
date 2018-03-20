@@ -99,7 +99,7 @@ function toSelection(mode: Mode, selection: string) {
   return
 }
 
-export function toString(selection: Selection): string {
+export function toString(selection: Selection | null): string {
   switch (selection) {
     case Selection.Paper:
       return '(paper) :raised_back_of_hand:'
@@ -115,17 +115,28 @@ export function toString(selection: Selection): string {
 
     case Selection.Spock:
       return '(spock) :spock-hand:'
+
+    case null:
+      return '(nothing!) :chicken:'
   }
 }
 
 interface MsgOpts {
   name: string
-  select: Selection
+  select: Selection | null
 }
 
-export function getWinner(left: Selection, right: Selection) {
+export function getWinner(left: Selection | null, right: Selection | null) {
   if (left === right) {
     return Result.Draw
+  }
+
+  if (!left) {
+    return Result.Right
+  }
+
+  if (!right) {
+    return Result.Left
   }
 
   switch (left) {
@@ -166,7 +177,11 @@ export function toMessage(left: MsgOpts, right: MsgOpts) {
 
   const toText = (text: string) => `*${lname}* ${ltext} ${text} *${rname}* ${rtext}!`
 
-  switch (lsel) {
+  if (rsel === null) {
+    return toText('intimidated')
+  }
+
+  switch (lsel!) {
     case Selection.Scissors:
       return rsel === Selection.Paper ? toText('shredded') : toText('decapitated')
 
