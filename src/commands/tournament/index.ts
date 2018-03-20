@@ -65,7 +65,6 @@ register(
 )
 
 async function startSignups(bot: SlackClient, mode: Mode, channel: string) {
-  const cfg = getConfig()
   await setConfig('tournament', {
     mode,
     channel,
