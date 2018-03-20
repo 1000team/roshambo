@@ -20,24 +20,36 @@ register(
       return
     }
 
-    if (args[0] === 'ai') {
-      await createProfile(cfg.tournament.mode, 'ai')
-      cfg.tournament.users.push('ai')
-      await bot.postMessage({
-        channel: msg.channel,
-        text: 'You have entered a bot into the tournament'
-      })
-    } else {
-      await createProfile(cfg.tournament.mode, msg.user)
-      cfg.tournament.users.push(msg.user)
-      const name = getRealname(bot, msg.user)
+    const entrantId = args[0] === 'ai' ? 'ai' : msg.user
+    try {
+      if (entrantId === 'ai') {
+        cfg.tournament.users.push('ai')
+        await bot.postMessage({
+          channel: msg.channel,
+          text: 'You have entered a bot into the tournament'
+        })
+        return
+      }
+
+      const name = getRealname(bot, entrantId)
+      const isSignedup = cfg.tournament.users.some(u => u === entrantId)
+      if (isSignedup) {
+        await bot.postMessage({
+          channel: msg.channel,
+          text: `You (${name}) are already in the tournament`
+        })
+        return
+      }
+
+      cfg.tournament.users.push(entrantId)
       await bot.postMessage({
         channel: msg.channel,
         text: `*${name}* has joined the tournament`
       })
+    } finally {
+      await createProfile(cfg.tournament.mode, entrantId)
+      await setConfig('tournament', cfg.tournament)
     }
-
-    await setConfig('tournament', cfg.tournament)
   }
 )
 
