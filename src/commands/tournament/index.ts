@@ -1,5 +1,5 @@
 import { setConfig, register, getConfig } from '../../config'
-import { getModeName, Mode, sleep } from '../util'
+import { getModeName, Mode, sleep, getRealname } from '../util'
 import { SlackClient } from 'slacklib'
 import { runTournament } from './run'
 
@@ -10,7 +10,7 @@ register('start', 'Force start a tournament that is currently in signup mode', b
 register(
   'signup',
   'Join a tournament that is currently accepting signups',
-  async (bot, msg, cfg) => {
+  async (bot, msg, cfg, args) => {
     if (!cfg.tournament.signup) {
       await bot.postMessage({
         channel: msg.channel,
@@ -19,11 +19,21 @@ register(
       return
     }
 
-    cfg.tournament.users.push(msg.user)
-    await bot.postMessage({
-      channel: msg.channel,
-      text: 'You have joined the tournament'
-    })
+    if (args[0] === 'ai') {
+      cfg.tournament.users.push('ai')
+      await bot.postMessage({
+        channel: msg.channel,
+        text: 'You have entered a bot into the tournament'
+      })
+    } else {
+      cfg.tournament.users.push(msg.user)
+      const name = getRealname(bot, msg.user)
+      await bot.postMessage({
+        channel: msg.channel,
+        text: `*${name}* has joined the tournament`
+      })
+    }
+
     await setConfig('tournament', cfg.tournament)
   }
 )
@@ -70,8 +80,8 @@ async function startSignups(bot: SlackClient, mode: Mode, channel: string) {
     channel,
     text: [
       `Registrations are open for a ${getModeName(mode)} Roshambo tournament!`,
-      `Use  \`@${cfg.name} signup\` to join the tournament`,
-      `Registrations will be open for 5 minutes or \`${cfg.name} start\` is used`
+      `Use  \`@${bot.self.name} signup\` to join the tournament`,
+      `Registrations will be open for 5 minutes or \`@${bot.self.name} start\` is used`
     ].join('\n')
   })
 }

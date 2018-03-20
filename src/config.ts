@@ -40,6 +40,13 @@ export async function backfillConfig() {
   // Set all players to out of game
   await reset('roshambo')
   await reset('roshamboLS')
+
+  const tournament = cfg.tournament
+  tournament.active = false
+  tournament.users = []
+  tournament.signup = false
+  tournament.matches = []
+  await setConfig('tournament', tournament)
 }
 
 export interface Config {

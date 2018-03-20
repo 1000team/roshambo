@@ -24,7 +24,6 @@ export interface GameResult {
   winner: Result
   challenger: Selection | null
   opponent: Selection | null
-  preText: string[]
 }
 
 export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args: string[]) {
@@ -88,19 +87,9 @@ export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args
         return
       }
 
-      const { preText } = gameResult
-      const results = await updateResults(bot, mode, challengerId, opponentId, gameResult.winner)
       gamesPlayed++
 
-      const resultText = getResultText({
-        bot,
-        mode,
-        results,
-        opponentId,
-        challengerId
-      })
-
-      const messages = [...preText, ...resultText]
+      const messages: string[] = []
       const chalSelect: string = `Your opponent selected ${toString(gameResult.opponent)}`
       const oppSelect: string = `Your opponent selected ${toString(gameResult.challenger)}`
 
@@ -131,10 +120,12 @@ export async function play(mode: Mode, bot: SlackClient, msg: Chat.Message, args
         )
       }
 
-      await bot.postMessage({
-        channel,
-        text: messages.join('\n')
-      })
+      if (messages.length) {
+        await bot.postMessage({
+          channel,
+          text: messages.join('\n')
+        })
+      }
 
       // If only 1 win is required, we're not in "best of" mode
       // End the match after any result
@@ -165,7 +156,11 @@ export async function runGame(options: GameOptions): Promise<GameResult | null> 
     return null
   }
 
-  if (opponentId === challengerId) {
+  const isAnyAI = challengerId === 'ai' || opponentId === 'ai'
+
+  // AI can appear in multiple tournament spots
+  // They can challenge each other
+  if (!isAnyAI && opponentId === challengerId) {
     return cancel('You cannot challenge yourself')
   }
 
@@ -225,13 +220,29 @@ export async function runGame(options: GameOptions): Promise<GameResult | null> 
 
     const winner = getWinner(left, right)
 
-    const pre = [toMessage({ name: challenger, select: left }, { name: opponent, select: right })]
+    const quakeText = [
+      toMessage({ name: challenger, select: left }, { name: opponent, select: right })
+    ]
+
+    const results = await updateResults(bot, mode, challengerId, opponentId, winner)
+
+    const resultText = getResultText({
+      bot,
+      mode,
+      challengerId,
+      opponentId,
+      results
+    })
+
+    await bot.postMessage({
+      channel,
+      text: [...quakeText, ...resultText].join('\n')
+    })
 
     return {
       challenger: left,
       opponent: right,
-      winner,
-      preText: pre
+      winner
     }
   } catch (ex) {
     await bot.postMessage({

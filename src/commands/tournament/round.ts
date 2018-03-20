@@ -7,16 +7,6 @@ export async function runRound(bot: SlackClient, tournament: Tournament, matches
   const promises = matches.map((match, i) => runMatch(bot, tournament, match))
 
   const results = await Promise.all(promises)
-
-  /** Case: Finals */
-  // Cannot be undefined
-  // If null (both chickened out), cancel tournament
-
-  /** Case: Semi-finals */
-  // If one game fails (null), tournament winner is winner of the completed game
-
-  /** All other cases */
-  // Create next matches
   return results
 }
 

@@ -31,14 +31,15 @@ export async function runTournament(bot: SlackClient) {
   while (!done) {
     const nextUsers: string[] = []
     const matches = toMatches(tournament.users)
-    const messages: string[] = [`Starting round ${tournament.round}`]
-    if (nextUsers.length === 2) {
-      messages.push('FINAL ROUND!')
+    const messages: string[] = [`*Starting round ${tournament.round}*`]
+    if (matches.length === 1) {
+      messages.push('_Final Round!_')
     }
 
     for (const match of matches) {
+      const cha = getRealname(bot, match.challenger.id)
       const opp = match.opponent === 'bye' ? '_BYE_' : getRealname(bot, match.opponent.id)
-      messages.push(`${getRealname(bot, match.challenger.id)} vs. ${opp}`)
+      messages.push(`*${cha}* vs. *${opp}*`)
     }
 
     await bot.postMessage({ channel: tournament.channel, text: messages.join('\n') })
@@ -94,7 +95,7 @@ async function announceWinner(
   }
 
   if (winnerId) {
-    messages.push(`The winner of the ${getModeName(mode)} tournament is: *${winner}*!!!`)
+    messages.push(`The winner of the ${getModeName(mode)} Roshambo tournament is: *${winner}*!!!`)
   }
 
   await bot.postMessage({
@@ -117,7 +118,7 @@ function toMatches(users: string[]) {
   let index = 0
   const matches: Match[] = []
 
-  while (!users[index]) {
+  while (users[index]) {
     const challenger = users[index]
     const opponent = users[index + 1]
     matches.push({
