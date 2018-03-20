@@ -2,6 +2,7 @@ import { setConfig, register, getConfig } from '../../config'
 import { getModeName, Mode, sleep, getRealname } from '../util'
 import { SlackClient } from 'slacklib'
 import { runTournament } from './run'
+import { createProfile } from '../game/update'
 
 register('start', 'Force start a tournament that is currently in signup mode', bot => {
   return runTournament(bot)
@@ -20,12 +21,14 @@ register(
     }
 
     if (args[0] === 'ai') {
+      await createProfile(cfg.tournament.mode, 'ai')
       cfg.tournament.users.push('ai')
       await bot.postMessage({
         channel: msg.channel,
         text: 'You have entered a bot into the tournament'
       })
     } else {
+      await createProfile(cfg.tournament.mode, msg.user)
       cfg.tournament.users.push(msg.user)
       const name = getRealname(bot, msg.user)
       await bot.postMessage({

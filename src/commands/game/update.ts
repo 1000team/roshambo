@@ -114,3 +114,16 @@ const defaultHistory: Roshambo = {
   losses: 0,
   draws: 0
 }
+
+export async function createProfile(mode: Mode, id: string) {
+  const cfg = getConfig()
+  const key = getModeKey(cfg.tournament.mode)
+  const history = cfg[key]
+
+  if (history[id]) {
+    return
+  }
+
+  history[id] = { ...defaultHistory, userId: id }
+  await setConfig(key, history)
+}
