@@ -14,8 +14,7 @@
     "express": "^4.16.3",
     "ratings": "^0.4.2",
     "slacklib": "^3.0.0",
-    "vue": "^2.5.16",
-    "vue-class-component": "^6.2.0"
+    "vue": "^2.5.16"
   },
   "keywords": [],
   "license": "MIT",
@@ -37,7 +36,6 @@
     "rimraf": "^2.6.2",
     "ts-loader": "^4.1.0",
     "typescript": "2.8.0-rc",
-    "vue-loader": "^14.2.1",
     "webpack": "^4.2.0",
     "webpack-cli": "^2.0.12"
   }
