@@ -4,7 +4,16 @@ import { SlackClient } from 'slacklib'
 import { runTournament } from './run'
 import { createProfile } from '../game/update'
 
-register('start', 'Force start a tournament that is currently in signup mode', bot => {
+register('start', 'Force start a tournament that is currently in signup mode', (bot, msg, cfg) => {
+  const canStart = cfg.tournament.users.length > 2
+
+  if (!canStart) {
+    return bot.postMessage({
+      channel: msg.channel,
+      text: 'Cannot start tournament: Not enough users'
+    })
+  }
+
   return runTournament(bot)
 })
 
