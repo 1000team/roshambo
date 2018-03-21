@@ -1,5 +1,4 @@
 {
-  "tslint.enable": true,
   "typescript.tsdk": "./node_modules/typescript/lib",
   "files.exclude": {
     "**/.git": true,
@@ -14,6 +13,9 @@
       "when": "$(basename).ts"
     },
     "**/*?.js": {
+      "when": "$(basename).tsx"
+    },
+    "**/*?.jsx": {
       "when": "$(basename).tsx"
     },
     "**/*.sqlite": true
@@ -35,9 +37,6 @@
   "prettier.useTabs": false,
   "prettier.singleQuote": true,
   "prettier.trailingComma": "none",
-  "prettier.disableLanguages": [
-    "markdown",
-    "json"
-  ],
+  "prettier.disableLanguages": ["markdown", "json"],
   "editor.formatOnSave": true
 }

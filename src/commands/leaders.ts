@@ -1,4 +1,4 @@
-import { getConfig, register } from '../config'
+import { getConfig, register, Roshambo } from '../config'
 import { SlackClient } from 'slacklib'
 import { toStats } from './stats'
 import { getRealname, Mode, getModeKey, getModeName } from './util'
@@ -35,7 +35,7 @@ export async function leaders(bot: SlackClient, mode: Mode, channel: string, use
   })
 }
 
-export function getLeaders(bot: SlackClient, mode: Mode) {
+export function getLeaders(bot: SlackClient, mode: Mode): Ranking[] {
   const key = getModeKey(mode)
   const cfg = getConfig()
   const allUsers = Object.keys(cfg[key])
@@ -89,9 +89,18 @@ export function getLeaders(bot: SlackClient, mode: Mode) {
     return {
       id: userId,
       position: pos + 1,
-      name: userName,
+      name: userName as string,
+      stats: user,
       text: `*#${pos + 1}.* ${userName}, ${toStats(user)}`
     }
   })
   return leaders
+}
+
+export type Ranking = {
+  id: string
+  position: number
+  name: string
+  stats: Roshambo
+  text: string
 }
