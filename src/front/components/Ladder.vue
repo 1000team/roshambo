@@ -1,5 +1,5 @@
 <template>
-  <table class="table">
+  <table border="1">
     <thead>
       <th>#</th>
       <th>Name</th>
@@ -24,7 +24,24 @@ export default Vue.component('ladder', {
 </script>
 
 <style scoped>
-.table {
-  border: 5px solid;
+table {
+  border-top-width: 3px;
+  border-right-width: 3px;
+  border-bottom-width: 3px;
+  border-left-width: 3px;
+  border-spacing: 4px;
+  border-color: grey;
+}
+
+thead,
+tr {
+  display: table-row;
+  border-color: inherit;
+}
+
+thead {
+  display: table-header-group;
+  vertical-align: middle;
+  border-color: inherit;
 }
 </style>
