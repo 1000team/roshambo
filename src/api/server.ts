@@ -18,5 +18,4 @@ const app = express()
 
 app.use('/api', api)
 const staticPath = path.resolve(__dirname, '..', '..', 'src', 'front')
-console.log('Static path', staticPath)
 app.use(express.static(staticPath))
