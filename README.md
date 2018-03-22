@@ -13,6 +13,7 @@ In Slack:
 # From the command line:
 > yarn
 > yarn build
+> yarn bundle
 > export SLACK_TOKEN={API TOKEN} yarn start
 
 # Using Docker:
