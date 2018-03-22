@@ -1,5 +1,5 @@
 <template>
-  <table border="1">
+  <table border="1" v-bind:class="[theme]">
     <thead>
       <th>#</th>
       <th>Name</th>
@@ -17,9 +17,19 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { Ranking } from '../../commands/leaders'
 
 export default Vue.component('ladder', {
-  props: ['ladder']
+  props: {
+    ladder: {
+      default: [] as Ranking[],
+      required: false
+    },
+    theme: {
+      default: 'classic',
+      required: false
+    }
+  }
 })
 </script>
 
@@ -30,7 +40,14 @@ table {
   border-bottom-width: 3px;
   border-left-width: 3px;
   border-spacing: 4px;
-  border-color: grey;
+}
+
+table.dank {
+  border-color: blue;
+}
+
+table.classic {
+  border-color: purple;
 }
 
 thead,

@@ -1,5 +1,5 @@
 <template>
-  <ladder v-bind:ladder="ladder" />
+  <ladder v-bind:ladder="ladder" v-bind:theme="theme" />
 </template>
 
 <script lang="ts">
@@ -8,7 +8,8 @@ import Vue from 'vue'
 export default Vue.component('app', {
   data() {
     return {
-      ladder: []
+      ladder: [],
+      theme: 'dank'
     }
   },
   async mounted() {
