@@ -3,7 +3,7 @@ import * as path from 'path'
 
 export = {
   mode: 'development',
-  devtool: 'inline-source-map',
+  devtool: '#eval-source-map',
   entry: './src/front/index.ts',
   output: {
     path: path.resolve(process.cwd(), 'src', 'front'),
@@ -13,20 +13,28 @@ export = {
     alias: {
       vue: 'vue/dist/vue.esm.js'
     },
-    extensions: ['.js', '.ts']
+    extensions: ['.js', '.ts', '.tsx']
   },
   module: {
     rules: [
       {
-        test: /\.ts?$/,
+        test: /\.(ts|tsx)$/,
         use: [
           {
             loader: 'ts-loader',
             options: {
-              configFile: 'tsconfig.json'
+              configFile: 'tsconfig.front.json',
+              appendTsSuffixTo: [/\.vue$/]
             }
           }
         ]
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+          // `vue-loader` options
+        }
       }
     ]
   }

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "noImplicitAny": true,
-    "target": "es2015",
+    "target": "es5",
     "module": "commonjs",
     "jsx": "react",
     "jsxFactory": "h",
@@ -9,8 +9,14 @@
     "sourceMap": true,
     "noUnusedLocals": true,
     "skipLibCheck": false,
-    "lib": ["dom", "es2015", "es2016", "es2017"],
-    "outDir": "build"
+    "lib": [
+      "dom",
+      "es2015",
+      "es2016",
+      "es2017"
+    ]
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

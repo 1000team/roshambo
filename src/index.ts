@@ -4,9 +4,9 @@ import { start } from 'slacklib'
 import './commands'
 
 async function main() {
+  await start()
   await backfillConfig()
   await startApi()
-  await start()
 }
 
 main()

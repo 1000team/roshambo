@@ -1,14 +1,27 @@
 {
   "name": "roshambot",
-  "publishConfig": {
-    "//": "Do not publish",
-    "registry": "https://bad.registry"
-  },
   "description": "Totally serious Roshambo for Slack",
+  "main": "build/index.js",
   "version": "1.0.0",
   "author": "Carl Winkler",
   "bugs": {
     "url": "https://github.com/1000team/roshambo"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1000team/roshambo"
+  },
+  "publishConfig": {
+    "//": "Do not publish",
+    "registry": "https://bad.registry"
+  },
+  "scripts": {
+    "build": "tsc",
+    "bundle": "webpack --config build/webpack.config.js --display-error-details",
+    "start": "node src/index.js",
+    "clean": "rimraf \"src/**/*.js\" \"src/**/*.js.map\""
   },
   "dependencies": {
     "express": "^4.16.3",
@@ -16,26 +29,16 @@
     "slacklib": "^3.0.0",
     "vue": "^2.5.16"
   },
-  "keywords": [],
-  "license": "MIT",
-  "main": "src/index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/1000team/roshambo"
-  },
-  "scripts": {
-    "build": "tsc",
-    "bundle": "webpack --config src/webpack.config.js --display-error-details",
-    "start": "node src/index.js",
-    "clean": "rimraf \"src/**/*.js\" \"src/**/*.js.map\""
-  },
   "devDependencies": {
     "@types/express": "^4.11.1",
     "@types/node": "^9.3.0",
+    "css-loader": "^0.28.11",
     "prettier": "^1.10.2",
     "rimraf": "^2.6.2",
     "ts-loader": "^4.1.0",
     "typescript": "2.8.0-rc",
+    "vue-loader": "^14.2.1",
+    "vue-template-compiler": "^2.5.16",
     "webpack": "^4.2.0",
     "webpack-cli": "^2.0.12"
   }

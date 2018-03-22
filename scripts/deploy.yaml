@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: roshambo-deployment
+  labels:
+    app: roshambo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: roshambo
+  template:
+    metadata:
+      labels:
+        app: roshambo
+    spec:
+      containers:
+      - name: roshambo
+        image: bot/roshambo:master
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        env:
+          - name: SLACK_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: roshambo-token
+                key: .token
