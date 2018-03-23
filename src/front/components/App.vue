@@ -8,6 +8,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Ranking } from '../../commands/leaders'
+import { setInterval } from 'timers'
 
 export default Vue.component('app', {
   data() {
@@ -17,13 +18,17 @@ export default Vue.component('app', {
     }
   },
   async mounted() {
-    const ladders = await fetch('/api', { method: 'GET' })
-    const json = await ladders.json()
-    this.ladder = json.ls
+    this.refreshLadder()
+    setInterval(() => this.refreshLadder(), 10000)
   },
   methods: {
     changeTheme() {
       this.theme = this.theme === 'dank' ? 'classic' : 'dank'
+    },
+    async refreshLadder() {
+      const ladders = await fetch('/api', { method: 'GET' })
+      const json = await ladders.json()
+      this.ladder = json.ls
     }
   }
 })
