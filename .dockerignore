@@ -5,6 +5,7 @@ docs/
 assets/
 bin/
 config/
+build/
 
 *.js
 *.map

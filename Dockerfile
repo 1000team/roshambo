@@ -12,7 +12,6 @@ COPY package.json /code
 COPY yarn.lock /code
 COPY tsconfig.json /code
 COPY src /code/src
-COPY build /code/build
 
 EXPOSE 3000
 
