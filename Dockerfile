@@ -12,10 +12,11 @@ COPY package.json /code
 COPY yarn.lock /code
 COPY tsconfig.json /code
 COPY src /code/src
+COPY build /code/build
 
 EXPOSE 3000
 
 RUN yarn \
   && yarn build
 
-CMD node src/index.js
+CMD node build/index.js
