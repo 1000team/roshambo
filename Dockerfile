@@ -16,6 +16,7 @@ COPY src /code/src
 EXPOSE 3000
 
 RUN yarn \
-  && yarn build
+  && yarn build \
+  && yarn bundle
 
 CMD node build/index.js
