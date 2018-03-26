@@ -23,9 +23,9 @@ export async function leaders(bot: SlackClient, mode: Mode, channel: string, use
     ...posTexts.slice(0, 10).map(pos => pos.text)
   ]
 
-  const userPosition = posTexts.find(pos => pos.id === userId)!
+  const userPosition = posTexts.find(pos => pos.id === userId)
 
-  if (userPosition.position > 10) {
+  if (userPosition && userPosition.position > 10) {
     messages.push('...', userPosition.text + ' _(you)_')
   }
 
