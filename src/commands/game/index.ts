@@ -186,9 +186,9 @@ export async function runGame(options: GameOptions): Promise<GameResult | null> 
   await bot.postMessage({
     channel,
     text: [
-      `*#${prePos.ch} ${challenger}* (_${odds.challenger.rating}_ ${odds.challenger.text})`,
+      `*#${prePos.ch} ${challenger}* (_${odds.challenger.rating}_)`,
       'versus',
-      `*#${prePos.opp} ${opponent}* (_${odds.opponent.rating}_ ${odds.opponent.text})!`
+      `*#${prePos.opp} ${opponent}* (_${odds.opponent.rating}_)!`
     ].join(' ')
   })
 
