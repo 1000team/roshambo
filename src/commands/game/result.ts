@@ -1,5 +1,5 @@
 import { SlackClient } from 'slacklib'
-import { toStats, getUserStats } from '../stats'
+import { getUserStats } from '../stats'
 import { getRealname, Mode } from '../util'
 
 export interface ResultTextOpts {
