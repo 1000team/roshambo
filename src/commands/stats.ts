@@ -29,7 +29,7 @@ export interface Stats {
 }
 
 export function toStats({ rating, wins, losses, draws }: Stats) {
-  return `*${rating || 1500}`
+  return `*${rating || 1500}*`
 }
 
 export function getUserStats(mode: Mode, userId: string) {

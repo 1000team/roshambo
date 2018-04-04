@@ -42,8 +42,8 @@ export function getResultText(opts: ResultTextOpts) {
   const abcCh = Math.abs(chDiff)
   const absOp = Math.abs(opDiff)
 
-  const diffWhite = chDiff === 0 ? '' : chDiff < 0 ? `--#${abcCh}` : `++#${abcCh}`
-  const diffBlack = opDiff === 0 ? '' : opDiff < 0 ? `--#${absOp}` : `++#${absOp}`
+  const diffWhite = chDiff === 0 ? '' : chDiff < 0 ? `(--${abcCh})` : `(++${abcCh})`
+  const diffBlack = opDiff === 0 ? '' : opDiff < 0 ? `(--${absOp})` : `(++${absOp})`
 
   const shiftText = [
     `*${preWhite}${results.shift.white} ${diffWhite}*`,
@@ -51,8 +51,8 @@ export function getResultText(opts: ResultTextOpts) {
   ]
 
   const responses = [
-    `*#${post.ch} ${challenger}*: ${toStats(leftStats)} ${shiftText[0]}`,
-    `*#${post.opp} ${opponent}*: ${toStats(rightStats)} ${shiftText[1]}`
+    `*${challenger}* is now rated ${leftStats.rating} and position #${post.ch} ${shiftText[0]}`,
+    `*${opponent}* is now rated ${rightStats.rating} and position #${post.opp} ${shiftText[1]}`
   ]
   return responses
 }
