@@ -4735,9 +4735,9 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
   resolved "https://registry.npmjs.org/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
 
-slacklib@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/slacklib/-/slacklib-3.0.0.tgz#0f769a50e2b879b8a8a83b1ad783ed4e8f5e567d"
+slacklib@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/slacklib/-/slacklib-3.1.1.tgz#1d88e8be6c726bd4821d5f2b8c9068b763506eda"
   dependencies:
     "@types/needle" "^2.0.2"
     "@types/ws" "^3.2.1"
