@@ -53,7 +53,7 @@ export async function getSelection(
     return null
   }
 
-  const selection = toSelection(mode, (response || '').trim().slice(0, 1))
+  const selection = toSelection(mode, (response || '').toLowerCase().trim().slice(0, 1))
   if (!selection) {
     return getSelection(bot, mode, userId, timeout, 'Invalid selection. ')
   }
