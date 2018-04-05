@@ -172,7 +172,7 @@ export function toMessage(left: MsgOpts, right: MsgOpts) {
   const rname = loser.name
   const rtext = toString(rsel)
   if (lsel === rsel) {
-    return `${winner.name} and ${loser.name} both picked ${toString(lsel)}!`
+    return `*${winner.name}* and *${loser.name}* both picked ${toString(lsel)}!`
   }
 
   const toText = (text: string) => `*${lname}* ${ltext} ${text} *${rname}* ${rtext}!`

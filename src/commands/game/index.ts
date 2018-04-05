@@ -220,13 +220,14 @@ export async function runGame(options: GameOptions): Promise<GameResult | null> 
 
     const winner = getWinner(left, right)
 
-    const quakeText = [
-      toMessage({ name: challenger, select: left }, { name: opponent, select: right })
-    ]
+    const quakeText = toMessage(
+      { name: challenger, select: left },
+      { name: opponent, select: right }
+    )
 
     const results = await updateResults(bot, mode, challengerId, opponentId, winner)
 
-    const resultText = getResultText({
+    const [leftText, rightText] = getResultText({
       bot,
       mode,
       challengerId,
@@ -236,7 +237,16 @@ export async function runGame(options: GameOptions): Promise<GameResult | null> 
 
     await bot.postMessage({
       channel,
-      text: [...quakeText, ...resultText].join('\n')
+      text: quakeText,
+      attachments: [
+        {
+          mrkdwn_in: ['text'],
+          fields: [
+            { title: challenger, value: leftText, short: true },
+            { title: opponent, value: rightText, short: true }
+          ]
+        }
+      ]
     })
 
     return {

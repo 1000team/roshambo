@@ -1,6 +1,6 @@
 import { SlackClient } from 'slacklib'
 import { getUserStats } from '../stats'
-import { getRealname, Mode } from '../util'
+import { Mode } from '../util'
 
 export interface ResultTextOpts {
   bot: SlackClient
@@ -25,11 +25,9 @@ interface EloResult {
 }
 
 export function getResultText(opts: ResultTextOpts) {
-  const { bot, challengerId, opponentId, results, mode } = opts
+  const { challengerId, opponentId, results, mode } = opts
   const { pre, post } = results
 
-  const challenger = getRealname(bot, challengerId)
-  const opponent = getRealname(bot, opponentId)
   const chDiff = pre.ch - post.ch
   const opDiff = pre.opp - post.opp
 
@@ -45,14 +43,17 @@ export function getResultText(opts: ResultTextOpts) {
   const diffWhite = chDiff === 0 ? '' : chDiff < 0 ? `(--${abcCh})` : `(++${abcCh})`
   const diffBlack = opDiff === 0 ? '' : opDiff < 0 ? `(--${absOp})` : `(++${absOp})`
 
-  const shiftText = [
-    `*${preWhite}${results.shift.white} ${diffWhite}*`,
-    `*${preBlack}${results.shift.black} ${diffBlack}*`
+  const ratingText = [
+    `${leftStats.rating} (${preWhite}${results.shift.white})`,
+    `${rightStats.rating} (${preBlack}${results.shift.black})`
   ]
 
+  const posText = [`${diffWhite}`, `${diffBlack}`]
+
   const responses = [
-    `*${challenger}* is now rated ${leftStats.rating} and position #${post.ch} ${shiftText[0]}`,
-    `*${opponent}* is now rated ${rightStats.rating} and position #${post.opp} ${shiftText[1]}`
+    `*Rank* #${post.ch} ${posText[0]} *Rating* ${ratingText[0]}`,
+    `*Rank* #${post.opp} ${posText[1]} *Rating* ${ratingText[1]}`
   ]
+
   return responses
 }
