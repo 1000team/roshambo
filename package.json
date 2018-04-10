@@ -20,7 +20,7 @@
   "scripts": {
     "build": "tsc",
     "bundle": "webpack --config build/webpack.config.js --display-error-details",
-    "start": "node src/index.js",
+    "start": "node build/index.js",
     "clean": "rimraf \"src/**/*.js\" \"src/**/*.js.map\""
   },
   "dependencies": {
