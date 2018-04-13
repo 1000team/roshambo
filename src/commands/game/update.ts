@@ -29,9 +29,6 @@ export async function updateResults(
   challenger.rating = results.white
   opponent.rating = results.black
 
-  challenger.inGame = false
-  opponent.inGame = false
-
   switch (result) {
     case Result.Draw:
       challenger.draws++
