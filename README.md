@@ -1,4 +1,7 @@
 # Roshambot
+> Very serious argument resolution
+
+![Roshambo Example](https://github.com/1000team/roshambo/raw/master/example.png "Roshambo Example")
 
 ## Getting Started
 
@@ -7,6 +10,12 @@ In Slack:
 - Record the API Token and the username you configured
 - Invite the bot to a channel in Slack
 
+## Docker Image
+```sh
+> docker run -dt --env SLACK_TOKEN={API TOKEN} --name=roshambo --restart=always seikho/roshambo:latest
+```
+
+## Building from Source
 ```sh
 > git clone https://github.com/1000team/roshambo && cd roshambo
 
@@ -14,7 +23,7 @@ In Slack:
 > yarn
 > yarn build
 > yarn bundle
-> export SLACK_TOKEN={API TOKEN} yarn start
+> SLACK_TOKEN={API TOKEN} yarn start
 
 # Using Docker:
 > docker build -t roshambo:latest .

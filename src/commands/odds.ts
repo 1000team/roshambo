@@ -1,6 +1,6 @@
+import * as elo from 'ratings'
 import { register, getConfig } from '../config'
 import { getRealname, Mode, getModeKey } from './util'
-import * as elo from 'ratings'
 import { SlackClient } from 'slacklib'
 
 register(
@@ -10,18 +10,7 @@ register(
     const left = args.length === 1 ? msg.user : trim(args[0])
     const right = args.length === 1 ? trim(args[0]) : trim(args[1])
 
-    return sendOdds(bot, 'classic', msg.channel, left, right)
-  }
-)
-
-register(
-  'odds.ls',
-  'View the match odds. *Usage* `odds.bo3 @opponent` | `odds.bo3 @challenger @opponent`',
-  (bot, msg, cfg, args) => {
-    const left = args.length === 1 ? msg.user : trim(args[0])
-    const right = args.length === 1 ? trim(args[0]) : trim(args[1])
-
-    return sendOdds(bot, 'ls', msg.channel, left, right)
+    return sendOdds(bot, msg.channel, left, right)
   }
 )
 
@@ -33,19 +22,30 @@ function trim(name: string) {
   return (name || '').slice(2, -1)
 }
 
-function sendOdds(bot: SlackClient, mode: Mode, channel: string, left: string, right: string) {
-  try {
-    const { challenger, opponent } = getOdds(bot, mode, left, right)
+function sendOdds(bot: SlackClient, channel: string, left: string, right: string) {
+  const modes: Mode[] = ['classic', 'ls']
+  const messages: string[] = []
+  for (const mode of modes) {
+    try {
+      const { challenger, opponent } = getOdds(bot, mode, left, right)
+      messages.push(
+        `[${mode}] *${challenger.name}*: ${challenger.text} | *${opponent.name}*: ${opponent.text}`
+      )
+    } finally {
+    }
+  }
+
+  if (messages.length) {
     return bot.postMessage({
       channel,
-      text: `*${challenger.name}*: ${challenger.text} | *${opponent.name}*: ${opponent.text}`
-    })
-  } catch (ex) {
-    return bot.postMessage({
-      channel,
-      text: ex.message
+      text: messages.join('\n')
     })
   }
+
+  return bot.postMessage({
+    channel,
+    text: 'Unable to determine odds: One of the users does not have a profile'
+  })
 }
 
 export function getOdds(bot: SlackClient, mode: Mode, challengerId: string, opponentId: string) {
