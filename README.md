@@ -4,8 +4,8 @@
 ![Roshambo Example](https://github.com/1000team/roshambo/raw/master/example.png "Roshambo Example")
 
 ## Features
-- Classic rock, scissor paper
-- Lizard spock variation
+- Classic rock, scissor, paper
+- Lizard Spock variation
 - Ladders
 - ELO ratings
 - Single elimination tournaments
