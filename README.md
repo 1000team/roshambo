@@ -3,6 +3,17 @@
 
 ![Roshambo Example](https://github.com/1000team/roshambo/raw/master/example.png "Roshambo Example")
 
+## Features
+- Classic rock, scissor paper
+- Lizard spock variation
+- Ladders
+- ELO ratings
+- Single elimination tournaments
+- Race to/Best of [N] battles
+- Built on top of [Slacklib](https://github.com/1000team/seikho)
+- Amazing modern front-end application for the ladder built with Vue and Webpack
+  - [Example](http://roshambo.geddit.lol)
+
 ## Getting Started
 
 In Slack:
@@ -12,7 +23,7 @@ In Slack:
 
 ## Docker Image
 ```sh
-> docker run -dt --env SLACK_TOKEN={API TOKEN} --name=roshambo --restart=always seikho/roshambo:latest
+> docker run -dt -p 3000:3000 --env SLACK_TOKEN={API TOKEN} --name=roshambo --restart=always seikho/roshambo:latest
 ```
 
 ## Building from Source
@@ -27,7 +38,7 @@ In Slack:
 
 # Using Docker:
 > docker build -t roshambo:latest .
-> docker run -dt --env SLACK_TOKEN={API TOKEN} --name roshambo --restart=always roshambo:latest
+> docker run -dt -p 3000:3000 --env SLACK_TOKEN={API TOKEN} --name roshambo --restart=always roshambo:latest
 ```
 
 
