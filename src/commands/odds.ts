@@ -31,7 +31,8 @@ function sendOdds(bot: SlackClient, channel: string, left: string, right: string
       messages.push(
         `[${mode}] *${challenger.name}*: ${challenger.text} | *${opponent.name}*: ${opponent.text}`
       )
-    } finally {
+    } catch (ex) {
+      // Intentional NOOP
     }
   }
 
